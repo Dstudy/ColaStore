@@ -8,9 +8,7 @@ import Cart from "./cart.js";
 import CartItem from "./cartItem.js";
 import Order from "./order.js";
 import OrderItem from "./orderItem.js";
-import Favorite from "./favorite.js";
 import Analytics from "./analytics.js";
-import Reviews from "./review.js";
 import Size from "./size.js";
 import ProductVariant from "./productVariant.js";
 
@@ -34,21 +32,13 @@ const models = {
   CartItem: CartItem(sequelize),
   Order: Order(sequelize),
   OrderItem: OrderItem(sequelize),
-  Favorite: Favorite(sequelize),
   Analytics: Analytics(sequelize),
-  Review: Reviews(sequelize),
 };
 
 // =================================================================
 // ✅ Define Associations using the initialized models from the 'models' object
 // =================================================================
 
-// --- Product relationships ---
-models.Product.hasMany(models.Review, { foreignKey: "product_id" });
-
-//Product Reviews
-models.Review.belongsTo(models.Product, { foreignKey: "product_id" });
-models.Review.belongsTo(models.User, { foreignKey: "user_id" });
 
 // --- Product Images ---
 models.Product.hasMany(models.ProductImage, {
@@ -106,11 +96,6 @@ models.OrderItem.belongsTo(models.Product, {
   foreignKey: "product_id",
 });
 
-// --- Favorites ---
-models.User.hasMany(models.Favorite, { foreignKey: "user_id" });
-models.Product.hasMany(models.Favorite, { foreignKey: "product_id" });
-models.Favorite.belongsTo(models.User, { foreignKey: "user_id" });
-models.Favorite.belongsTo(models.Product, { foreignKey: "product_id" });
 
 // ✅ Export models + sequelize instance
 export { sequelize };

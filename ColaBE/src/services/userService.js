@@ -145,34 +145,91 @@ let updateUser = (id, data) => {
       let user = await db.User.findOne({
         where: { id: id },
       });
-      if (user) {
-        user.fullname = data.fullname;
-        user.email = data.email;
-        await user.save();
-        resolve(user);
-      } else {
-        resolve(null);
+      if (!user) {
+        resolve({ errCode: 1, errMessage: "User not found", user: null });
+        return;
       }
+
+      // Check if email is being changed and if it's already taken
+      if (data.email && data.email !== user.email) {
+        let emailExists = await checkUserEmail(data.email);
+        if (emailExists) {
+          resolve({
+            errCode: 2,
+            errMessage: "Email is already in use. Please use a different email.",
+            user: null,
+          });
+          return;
+        }
+      }
+
+      // Update user fields
+      if (data.fullname) {
+        user.fullname = data.fullname;
+      }
+      if (data.email) {
+        user.email = data.email;
+      }
+      await user.save();
+
+      // Return user without password_hash
+      const userResponse = {
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        role_id: user.role_id,
+      };
+
+      resolve({ errCode: 0, errMessage: "OK", user: userResponse });
     } catch (e) {
       reject(e);
     }
   });
 };
 
-let updateUserPassword = (id, password) => {
+let updateUserPassword = (id, oldPassword, newPassword) => {
   return new Promise(async (resolve, reject) => {
     try {
       let user = await db.User.findOne({
         where: { id: id },
       });
-      if (user) {
-        let hashPasswordFromBcrypt = bcrypt.hashSync(password, 10);
-        user.password_hash = hashPasswordFromBcrypt;
-        await user.save();
-        resolve(user);
-      } else {
-        resolve(null);
+      if (!user) {
+        resolve({
+          errCode: 1,
+          errMessage: "User not found",
+          user: null,
+        });
+        return;
       }
+
+      // Verify old password
+      let isOldPasswordCorrect = bcrypt.compareSync(
+        oldPassword,
+        user.password_hash
+      );
+      if (!isOldPasswordCorrect) {
+        resolve({
+          errCode: 2,
+          errMessage: "Current password is incorrect",
+          user: null,
+        });
+        return;
+      }
+
+      // Update to new password
+      let hashPasswordFromBcrypt = bcrypt.hashSync(newPassword, 10);
+      user.password_hash = hashPasswordFromBcrypt;
+      await user.save();
+
+      // Return user without password_hash
+      const userResponse = {
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        role_id: user.role_id,
+      };
+
+      resolve({ errCode: 0, errMessage: "Password updated successfully", user: userResponse });
     } catch (e) {
       reject(e);
     }

@@ -62,28 +62,76 @@ const hanbleUserRegister = async (req, res) => {
 
 const updateUser = async (req, res) => {
   let id = req.body.id;
-  let data = req.body;
-  const updatedUser = await userService.updateUser(id, data);
+  let data = {
+    fullname: req.body.fullname,
+    email: req.body.email,
+  };
+
+  if (!id) {
+    return res.status(400).json({
+      errCode: 1,
+      message: "User ID is required",
+    });
+  }
+
+  if (!data.fullname && !data.email) {
+    return res.status(400).json({
+      errCode: 1,
+      message: "At least one field (fullname or email) is required",
+    });
+  }
+
+  const result = await userService.updateUser(id, data);
+  
+  if (result.errCode !== 0) {
+    return res.status(400).json({
+      errCode: result.errCode,
+      message: result.errMessage,
+      user: result.user,
+    });
+  }
+
   return res.status(200).json({
-    user: updatedUser,
+    errCode: result.errCode,
+    message: result.errMessage,
+    user: result.user,
   });
 };
 
 const updateUserPassword = async (req, res) => {
   let id = req.body.id;
-  let password = req.body.password;
-  let check = await userService.checkUserPassword(id, password);
-  if (!check) {
+  let oldPassword = req.body.oldPassword;
+  let newPassword = req.body.newPassword;
+
+  if (!id || !oldPassword || !newPassword) {
     return res.status(400).json({
       errCode: 1,
-      message: "Wrong password",
-    });
-  } else {
-    const updatedUser = await userService.updateUserPassword(id, password);
-    return res.status(200).json({
-      user: updatedUser,
+      message: "User ID, old password, and new password are required",
     });
   }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({
+      errCode: 1,
+      message: "New password must be at least 6 characters long",
+    });
+  }
+
+  const result = await userService.updateUserPassword(id, oldPassword, newPassword);
+  
+  if (result.errCode !== 0) {
+    return res.status(400).json({
+      errCode: result.errCode,
+      message: result.errMessage,
+      user: result.user,
+    });
+  }
+
+  return res.status(200).json({
+    errCode: result.errCode,
+    message: result.errMessage,
+    user: result.user,
+  });
 };
 
 const handleForgotPassword = async (req, res) => {
