@@ -1,0 +1,674 @@
+[00:00:02.563] Server  LOG      ✓ Ready in 1860ms
+[00:00:06.102] Server  LOG      ○ Compiling / ...
+[00:00:07.130] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:07.334] Browser WARN    Image with src "/_next/static/media/logo.18a3517b.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:00:07.334] Browser WARN    Image with src "/_next/static/media/logo.18a3517b.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:01:19.983] Server  LOG      ✓ Compiled in 84ms
+[00:01:37.467] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:37.580] Browser WARN    Image with src "/_next/static/media/logo.18a3517b.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:01:37.580] Browser WARN    Image with src "/_next/static/media/logo.18a3517b.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:15:11.912] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.920] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.929] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.940] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.955] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.961] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.966] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.974] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.980] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.986] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.991] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:11.995] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.000] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.009] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.019] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.024] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.029] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.035] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.039] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.043] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.050] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.058] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.063] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.068] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.074] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.079] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.085] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.092] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.101] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.105] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.109] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.112] Server  ERROR    ⨯ ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:15:12.118] Server  LOG      ✓ Compiled in 160ms
+[00:15:13.167] Browser ERROR   ./src/app/page.tsx:2:1
+Module not found: Can't resolve '@/components/ImageWithFallback'
+  1 | "use client";
+> 2 | import ImageWithFallback from "@/components/ImageWithFallback";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import useSWR from "swr";
+  4 |
+  5 | interface ProductImage {
+
+Import map: aliased to relative './components/ImageWithFallback' inside of [project]/
+
+Import trace:
+  Server Component:
+    ./src/app/page.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+[00:16:21.255] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:16:21.419] Browser WARN    Image with src "/_next/static/media/logo.18a3517b.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:16:21.419] Browser WARN    Image with src "/_next/static/media/logo.18a3517b.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:18:16.310] Server  LOG      ✓ Compiled in 297ms

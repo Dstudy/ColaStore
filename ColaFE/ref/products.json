@@ -1,0 +1,181 @@
+{
+    "errCode": 0,
+    "message": "OK",
+    "data": {
+        "totalProducts": 10,
+        "totalPages": 1,
+        "currentPage": 1,
+        "products": [
+            {
+                "id": 1,
+                "name": "Cola Classic 330ml",
+                "subtitle": "Sparkling soft drink",
+                "description": "Refreshing cola beverage in a convenient 330ml can.",
+                "price": "1.50",
+                "hasSize": false,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/DC143C/FFFFFF?text=Cola+Classic"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "name": "Orange Soda 500ml",
+                "subtitle": "Citrus flavored drink",
+                "description": "Sweet and tangy orange-flavored carbonated drink.",
+                "price": "1.80",
+                "hasSize": false,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/FF8C00/FFFFFF?text=Orange+Soda"
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "name": "Basic Logo T-Shirt",
+                "subtitle": "Unisex cotton tee",
+                "description": "Comfortable everyday T-shirt with front logo print.",
+                "price": "12.99",
+                "hasSize": true,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/000000/FFFFFF?text=Basic+Tee+Front"
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "name": "Premium Polo Shirt",
+                "subtitle": "Casual smart wear",
+                "description": "Soft pique fabric polo suitable for both work and leisure.",
+                "price": "24.99",
+                "hasSize": true,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/000080/FFFFFF?text=Polo+Front"
+                    }
+                ]
+            },
+            {
+                "id": 5,
+                "name": "Oversized Graphic Tee",
+                "subtitle": "Streetwear style",
+                "description": "Relaxed-fit T-shirt with bold back graphic.",
+                "price": "19.99",
+                "hasSize": true,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/000000/FFFFFF?text=Graphic+Tee+Front"
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "name": "Reusable Water Bottle 750ml",
+                "subtitle": "Stainless steel",
+                "description": "Insulated stainless steel bottle that keeps drinks cold for hours.",
+                "price": "9.99",
+                "hasSize": false,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/C0C0C0/000000?text=Water+Bottle"
+                    }
+                ]
+            },
+            {
+                "id": 7,
+                "name": "Canvas Tote Bag",
+                "subtitle": "Everyday carry",
+                "description": "Durable canvas tote bag ideal for shopping or commuting.",
+                "price": "7.50",
+                "hasSize": false,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/F5F5DC/000000?text=Tote+Bag"
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "name": "Baseball Cap",
+                "subtitle": "Adjustable strap",
+                "description": "Classic cap with adjustable strap and embroidered logo.",
+                "price": "14.99",
+                "hasSize": false,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/000000/FFFFFF?text=Cap+Front"
+                    }
+                ]
+            },
+            {
+                "id": 9,
+                "name": "Wireless Earbuds",
+                "subtitle": "Bluetooth in-ear",
+                "description": "Compact wireless earbuds with charging case and touch controls.",
+                "price": "39.99",
+                "hasSize": false,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/400x400/000000/FFFFFF?text=Earbuds"
+                    }
+                ]
+            },
+            {
+                "id": 10,
+                "name": "Desk Mouse Pad",
+                "subtitle": "Extended size",
+                "description": "Non-slip extended mouse pad suitable for work or gaming.",
+                "price": "5.99",
+                "hasSize": false,
+                "isFeatured": false,
+                "active": true,
+                "createdAt": "2025-12-19T11:31:53.000Z",
+                "updatedAt": "2025-12-19T11:31:53.000Z",
+                "ProductImages": [
+                    {
+                        "pic_url": "https://via.placeholder.com/600x300/000000/FFFFFF?text=Mouse+Pad"
+                    }
+                ]
+            }
+        ]
+    }
+}
