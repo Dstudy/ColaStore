@@ -52,13 +52,15 @@ export default function CartPage() {
   const router = useRouter();
   const [userId, setUserId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     const userStr = localStorage.getItem("user");
 
     if (!token || !userStr) {
-      router.push("/login");
+      setIsAuthenticated(false);
+      setIsLoading(false);
       return;
     }
 
@@ -66,11 +68,12 @@ export default function CartPage() {
       const user = JSON.parse(userStr);
       if (user?.id) {
         setUserId(user.id);
+        setIsAuthenticated(true);
       } else {
-        router.push("/login");
+        setIsAuthenticated(false);
       }
     } catch (error) {
-      router.push("/login");
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
     }
@@ -152,6 +155,31 @@ export default function CartPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+            <ShoppingBag className="w-24 h-24 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+              Please login to view your cart
+            </h2>
+            <p className="text-gray-600 mb-6">
+              You need to be logged in to access your shopping cart.
+            </p>
+            <Link
+              href="/login"
+              className="inline-block px-6 py-3 bg-black text-white rounded hover:bg-gray-800 transition"
+            >
+              Login
+            </Link>
+          </div>
         </div>
       </div>
     );

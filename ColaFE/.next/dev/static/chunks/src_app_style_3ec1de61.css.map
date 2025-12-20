@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///D:/Visual%20studio%20code/CocaCola/ColaFE/src/app/style.css"],"sourcesContent":["#container3d {\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100%;\r\n  height: 100%;\r\n  z-index: 0;\r\n  pointer-events: none;\r\n}\r\n\r\n#container3d canvas {\r\n  display: block;\r\n  width: 100% !important;\r\n  height: 100% !important;\r\n}\r\n\r\nbody{\r\n  overflow-x: hidden; /* Prevent horizontal scroll on body */\r\n}\r\n\r\n.container {\r\n  background-color: black;\r\n  width: 400vw; /* 4 panels * 100vw each */\r\n  height: 100vh;\r\n  display: flex;\r\n  flex-wrap: nowrap;\r\n  overflow: hidden; /* GSAP handles scrolling */\r\n  color: white;\r\n}\r\n\r\n.panel{\r\n  width: 100vw; \r\n  height: 100vh;\r\n  flex-shrink: 0; \r\n}\r\n\r\nbody{\r\n  background-color: white;\r\n}"],"names":[],"mappings":"AAAA;;;;;;;;;;AAUA;;;;;;AAMA;;;;AAIA;;;;;;;;;;AAUA;;;;;;AAMA"}}]
+}

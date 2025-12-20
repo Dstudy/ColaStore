@@ -1,0 +1,42 @@
+/* [project]/src/app/style.css [app-client] (css) */
+#container3d {
+  z-index: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#container3d canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.container {
+  color: #fff;
+  background-color: #000;
+  flex-wrap: nowrap;
+  width: 400vw;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+.panel {
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  background-color: #fff;
+}
+
+/*# sourceMappingURL=src_app_style_3ec1de61.css.map*/
