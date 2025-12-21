@@ -14,26 +14,48 @@
   height: 100% !important;
 }
 
-body{
-  overflow-x: hidden; /* Prevent horizontal scroll on body */
+body {
+  overflow-x: visible;
+  /* Prevent horizontal scroll on body */
 }
 
-.container {
+.container-product {
   background-color: black;
-  width: 400vw; /* 4 panels * 100vw each */
+  width: 400vw;
+  /* 4 panels * 100vw each */
   height: 100vh;
   display: flex;
   flex-wrap: nowrap;
-  overflow: hidden; /* GSAP handles scrolling */
-  color: white;
+  overflow: visible;
 }
 
-.panel{
-  width: 100vw; 
+.container-feature {
+  background-color: black;
+  width: 400vw;
+  /* 4 panels * 100vw each */
   height: 100vh;
-  flex-shrink: 0; 
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: visible;
 }
 
-body{
+.panel {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  background-color: black;
+}
+
+.panel-feature {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  background-color: white;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+}
+
+body {
   background-color: white;
 }

@@ -18,11 +18,27 @@ export interface ProductVariant {
   Size: Size;
 }
 
+export interface ProductDetails {
+  id: number;
+  productId: number;
+  serving_size: string;
+  energy_kcal: number;
+  protein: number;
+  fat: number;
+  carbohydrates: number;
+  sugars: number;
+  fiber: number;
+  ingredient: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Product {
   id: number;
   name: string;
   subtitle: string;
   description: string;
+  "3DUrl"?: string;
   price: string;
   hasSize: boolean;
   isFeatured: boolean;
@@ -31,6 +47,7 @@ export interface Product {
   updatedAt?: string;
   ProductImages: ProductImage[];
   ProductVariants?: ProductVariant[];
+  ProductDetails?: ProductDetails;
 }
 
 export interface ProductsListResponse {

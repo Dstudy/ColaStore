@@ -16,20 +16,27 @@
 }
 
 body {
-  overflow-x: hidden;
+  overflow-x: visible;
 }
 
-.container {
-  color: #fff;
+.container-product, .container-feature {
   background-color: #000;
   flex-wrap: nowrap;
   width: 400vw;
   height: 100vh;
   display: flex;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .panel {
+  background-color: #000;
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.panel-feature {
+  background-color: #fff;
   flex-shrink: 0;
   width: 100vw;
   height: 100vh;

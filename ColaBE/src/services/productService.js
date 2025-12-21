@@ -7,6 +7,8 @@ const {
   ProductImage,
   ProductVariant,
   Size,
+  ProductDetails,
+  ProductType,
 } = models;
 
 const getAllProducts = async (queryParams) => {
@@ -16,6 +18,7 @@ const getAllProducts = async (queryParams) => {
       limit = 12,
       search,
       sortBy,
+      productType,
     } = queryParams;
 
     const numericLimit = parseInt(limit, 10);
@@ -34,6 +37,11 @@ const getAllProducts = async (queryParams) => {
           order: [["display_order", "ASC"]], // Lấy ảnh có thứ tự hiển thị đầu tiên
           required: false, // Sử dụng LEFT JOIN (quan trọng)
         },
+        {
+          model: ProductType,
+          attributes: ["id", "name", "description"],
+          required: false, // LEFT JOIN
+        },
       ],
       distinct: true, // Cần thiết cho `count` khi có include
     };
@@ -45,7 +53,11 @@ const getAllProducts = async (queryParams) => {
       );
     }
 
-    // Brand, Shape, Material filtering removed
+    // Filter by product type if provided
+    if (productType) {
+      commonOptions.include[1].where = { name: productType };
+      commonOptions.include[1].required = true; // INNER JOIN when filtering
+    }
 
     // 1. Đếm tổng số sản phẩm khớp với bộ lọc
     const count = await Product.count(commonOptions);
@@ -105,6 +117,11 @@ const getProductById = async (id) => {
             required: false, // Size can be null - use LEFT JOIN to include variants with null size_id
           },
         ],
+      },
+      {
+        model: ProductDetails,
+        as: "ProductDetails", // Must match the alias in the association
+        required: false, // Use LEFT JOIN to include products even if details don't exist
       },
     ],
   });

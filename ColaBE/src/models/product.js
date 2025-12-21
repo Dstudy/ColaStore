@@ -8,6 +8,7 @@ export default (sequelize) => {
       name: { type: DataTypes.STRING, allowNull: false },
       subtitle: { type: DataTypes.STRING },
       description: { type: DataTypes.TEXT },
+      "3DUrl": { type: DataTypes.STRING },
       price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -16,6 +17,7 @@ export default (sequelize) => {
       hasSize: { type: DataTypes.BOOLEAN, defaultValue: false },
       isFeatured: { type: DataTypes.BOOLEAN, defaultValue: false },
       active: { type: DataTypes.BOOLEAN, defaultValue: true },
+      productTypeId: { type: DataTypes.INTEGER },
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,
     },
@@ -28,6 +30,9 @@ export default (sequelize) => {
   Product.associate = (models) => {
     Product.hasMany(models.Review, {
       foreignKey: "product_id",
+    });
+    Product.belongsTo(models.ProductType, {
+      foreignKey: "productTypeId",
     });
   };
 

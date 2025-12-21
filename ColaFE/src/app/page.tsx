@@ -2,10 +2,11 @@
 import { ArrowDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import "./style.css";
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import ThreeViewerHome from "@/components/ThreeViewerHome";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,8 +17,20 @@ export default function Home() {
   const modelRef = useRef<THREE.Group | null>(null);
   const [modelLoaded, setModelLoaded] = useState(false);
 
+  // Scroll to top on page load/refresh
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+
   useEffect(() => {
     if (!containerRef.current) return;
+
+    // Clear any existing canvas elements first
+    const container = containerRef.current;
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
 
     // Initialize Three.js
     const camera = new THREE.PerspectiveCamera(
@@ -32,16 +45,14 @@ export default function Home() {
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-
     // Get container dimensions
-    const container = containerRef.current;
     const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || window.innerHeight;
 
-    const renderer = new THREE.WebGLRenderer({ 
-      alpha: true, 
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
       antialias: true,
-      powerPreference: "high-performance"
+      powerPreference: "high-performance",
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -79,33 +90,31 @@ export default function Home() {
     pointLight.position.set(0, 5, 5);
     scene.add(pointLight);
 
-
     // Load 3D model
     const loader = new GLTFLoader();
     loader.load(
       "https://res.cloudinary.com/dlwenphlw/image/upload/v1766163232/zeroCoke_gbfbnd.glb",
       (gltf: any) => {
         const model = gltf.scene;
-        
 
         // Center and scale the model
         const box = new THREE.Box3().setFromObject(model);
         const size = box.getSize(new THREE.Vector3());
-        
+
         // Calculate scale to fit in view
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 2.3 / maxDim;
         model.scale.multiplyScalar(scale);
-        
+
         console.log(scale);
 
         // Center the model
         model.position.x = 1.5;
         model.position.y = -1;
 
-        model.rotation.y = - Math.PI / 2;
-        model.rotation.z = - Math.PI / 8;
-        
+        model.rotation.y = -Math.PI / 2;
+        model.rotation.z = -Math.PI / 8;
+
         modelRef.current = model;
 
         scene.add(model);
@@ -122,8 +131,6 @@ export default function Home() {
       }
     );
 
-
-
     // Animation loop
     const animate = () => {
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
@@ -133,36 +140,80 @@ export default function Home() {
     };
     animate();
 
-
     // Handle window resize
     const handleResize = () => {
       if (cameraRef.current && rendererRef.current && containerRef.current) {
         const container = containerRef.current;
         const width = container.clientWidth || window.innerWidth;
         const height = container.clientHeight || window.innerHeight;
-        
+
         cameraRef.current.aspect = width / height;
         cameraRef.current.updateProjectionMatrix();
         rendererRef.current.setSize(width, height);
         rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       }
     };
-    window.addEventListener('resize', handleResize);
-
-
+    window.addEventListener("resize", handleResize);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize);
+      console.log("Cleaning up Three.js scene");
+      window.removeEventListener("resize", handleResize);
+
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
       }
-      if (rendererRef.current && containerRef.current) {
-        containerRef.current.removeChild(rendererRef.current.domElement);
+
+      // Dispose of the model
+      if (modelRef.current) {
+        modelRef.current.traverse((child: any) => {
+          if (child.geometry) child.geometry.dispose();
+          if (child.material) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach((mat: any) => mat.dispose());
+            } else {
+              child.material.dispose();
+            }
+          }
+        });
+        if (sceneRef.current) {
+          sceneRef.current.remove(modelRef.current);
+        }
+        modelRef.current = null;
       }
+
+      // Dispose of the scene
+      if (sceneRef.current) {
+        sceneRef.current.traverse((object: any) => {
+          if (object.geometry) object.geometry.dispose();
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach((mat: any) => mat.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        });
+        sceneRef.current.clear();
+        sceneRef.current = null;
+      }
+
+      // Dispose of the renderer
       if (rendererRef.current) {
         rendererRef.current.dispose();
+        rendererRef.current.forceContextLoss();
+        if (
+          containerRef.current &&
+          rendererRef.current.domElement.parentNode === containerRef.current
+        ) {
+          containerRef.current.removeChild(rendererRef.current.domElement);
+        }
+        rendererRef.current = null;
       }
+
+      cameraRef.current = null;
+      setModelLoaded(false);
     };
   }, []);
 
@@ -171,104 +222,38 @@ export default function Home() {
     // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
 
+    // Kill any existing ScrollTrigger instances first
+    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+
     // Wait for DOM to be ready
     const setupScrollTween = () => {
-      const container = document.querySelector(".container");
-      const sections = gsap.utils.toArray(".container .panel");
-      
+      const container = document.querySelector(".container-product");
+      const sections = gsap.utils.toArray(".container-product .panel");
+
       // Check if container and sections exist
       if (!container || sections.length === 0) {
-        console.warn("Container or sections not found for scrollTween, retrying...");
+        console.warn(
+          "Container or sections not found for scrollTween, retrying..."
+        );
         // Retry after a short delay
         setTimeout(setupScrollTween, 50);
         return;
       }
 
-      let scrollTween = gsap.to(sections, {
+      gsap.to(sections, {
         xPercent: -100 * (sections.length - 1),
         ease: "none", // <-- IMPORTANT!
         scrollTrigger: {
-          trigger: ".container",
+          trigger: ".container-product",
           pin: true,
           scrub: 0.1,
           //snap: directionalSnap(1 / (sections.length - 1)),
           end: "+=3000",
-          markers: false
-        }
-      });
-
-      gsap.set(".box-1, .box-2, .box-3, .box-4", { y: 150 });
-      // ScrollTrigger.defaults({ markers: { startColor: "white", endColor: "white" } });
-
-      // red section
-      gsap.to(".box-1", {
-        ease: "elastic",
-        scrollTrigger: {
-          trigger: ".box-1",
-          containerAnimation: scrollTween,
-          start: "left center",
-          toggleActions: "play none none reset",
-          id: "1",
-          markers: false
-          
-        }
-      });
-
-      // gray section
-      gsap.to(".box-2", {
-        scrollTrigger: {
-          trigger: ".box-2",
-          containerAnimation: scrollTween,
-          start: "center 80%",
-          end: "center 20%",
-          scrub: true,
-          id: "2",
-          markers: false
-        }
-      });
-
-      gsap.to(".box-3", {
-        scrollTrigger: {
-          trigger: ".box-3",
-          containerAnimation: scrollTween,
-          start: "center 80%",
-          end: "center 20%",
-          scrub: true,
-          id: "2",
-          markers: false
-        }
-      });
-
-      gsap.to(".box-4", {
-        scrollTrigger: {
-          trigger: ".box-4",
-          containerAnimation: scrollTween,
-          start: "center 80%",
-          end: "center 20%",
-          scrub: true,
-          id: "2",
-          markers: false
-        }
-      });
-
-      
-      ["red", "gray", "purple", "green"].forEach((triggerClass, i) => {
-        ScrollTrigger.create({
-          trigger: "." + triggerClass,
-          containerAnimation: scrollTween,
-          start: "left 30%",
-          end: i === 3 ? "right right" : "right 30%",
           markers: false,
-          onToggle: (self) =>
-            gsap.to(".marker-" + (i + 1), {
-              duration: 0.25,
-              autoAlpha: self.isActive ? 1 : 0
-            })
-        });
+        },
       });
 
-
-      return scrollTween;
+      gsap.set(".box-1, .box-2, .box-3, .box-4", { y: 300 });
     };
 
     // Use requestAnimationFrame to ensure DOM is rendered
@@ -281,11 +266,14 @@ export default function Home() {
     init();
 
     return () => {
+      console.log("Cleaning up ScrollTrigger");
       if (rafId) {
         cancelAnimationFrame(rafId);
       }
       // Kill all ScrollTrigger instances on cleanup
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      // Refresh ScrollTrigger to recalculate positions
+      ScrollTrigger.refresh();
     };
   }, []);
 
@@ -295,7 +283,7 @@ export default function Home() {
 
     // Wait for ScrollTrigger to be ready
     const setupModelAnimations = () => {
-      const container = document.querySelector(".container");
+      const container = document.querySelector(".container-product");
       if (!container) {
         setTimeout(setupModelAnimations, 50);
         return;
@@ -303,28 +291,43 @@ export default function Home() {
 
       if (modelRef.current) {
         console.log("Model loaded, setting up animations");
-        
+
         // 1. Rotation Animation
         gsap.to(modelRef.current.rotation, {
           y: Math.PI * 2, // Rotate 360 degrees
           scrollTrigger: {
-            trigger: ".container", 
-            start: "top top",      
-            end: "+=3000",         
-            scrub: true,     
-            markers: true      
-          }
+            trigger: ".container-product",
+            start: "top top",
+            end: "+=3000",
+            scrub: true,
+            markers: false,
+          },
         });
 
         // 2. Position Animation (Moving the can as we scroll)
         gsap.to(modelRef.current.position, {
           x: -1.5, // Move from right to left
           scrollTrigger: {
-            trigger: ".container",
+            trigger: ".container-product",
             start: "top top",
             end: "+=3000",
             scrub: true,
-          }
+            markers: false,
+          },
+        });
+
+        gsap.to(modelRef.current.scale, {
+          x: 0,
+          y: 0,
+          z: 0,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".features",
+            start: "top bottom",
+            end: "+=300",
+            scrub: true,
+            markers: false,
+          },
         });
       }
     };
@@ -333,87 +336,428 @@ export default function Home() {
 
     return () => {
       // Cleanup model-specific ScrollTriggers if needed
-      ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.vars && (trigger.vars.trigger === ".container")) {
+      ScrollTrigger.getAll().forEach((trigger) => {
+        if (trigger.vars && trigger.vars.trigger === ".container-feature") {
         }
       });
     };
   }, [modelLoaded]);
 
+  useEffect(() => {
+    // Register ScrollTrigger plugin
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Kill any existing ScrollTrigger instances first
+    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+
+    // Wait for DOM to be ready
+    const setupScrollTween = () => {
+      const container = document.querySelector(".container-feature");
+      const sections = gsap.utils.toArray(".container-feature .panel");
+
+      // Check if container and sections exist
+      if (!container || sections.length === 0) {
+        console.warn(
+          "Container or sections not found for scrollTween, retrying..."
+        );
+        // Retry after a short delay
+        setTimeout(setupScrollTween, 50);
+        return;
+      }
+
+      gsap.to(sections, {
+        xPercent: -100 * (sections.length - 1),
+        ease: "none", // <-- IMPORTANT!
+        scrollTrigger: {
+          trigger: ".container-feature",
+          // start: "top center",
+          pin: true,
+          scrub: 0.1,
+          //snap: directionalSnap(1 / (sections.length - 1)),
+          end: "+=4000",
+          markers: false,
+        },
+      });
+    };
+
+    // Use requestAnimationFrame to ensure DOM is rendered
+    let rafId: number;
+    const init = () => {
+      rafId = requestAnimationFrame(() => {
+        setupScrollTween();
+      });
+    };
+    init();
+
+    return () => {
+      console.log("Cleaning up ScrollTrigger");
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      // Kill all ScrollTrigger instances on cleanup
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      // Refresh ScrollTrigger to recalculate positions
+      ScrollTrigger.refresh();
+    };
+  }, []);
+
   return (
-    <>
+    <div className="overflow-x-hidden">
       <section className="bg-black">
-      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 items-center px-8 py-16 gap-12">  
-            {/* Text */}
-        <div className="text-white max-w-xl">
-          <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
-            CATCH THE WAVE. <br />
-            FEEL THE ZERO.
-          </h2>
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 items-center px-40 py-40 gap-12">
+          {/* Text */}
+          <div className="text-white max-w-xl">
+            <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              CATCH THE WAVE. <br />
+              FEEL THE ZERO.
+            </h2>
 
-          <p className="mt-6 text-white/80 text-sm leading-relaxed">
-            Zero Sugar, Maximum Flavor – Dive into the crisp, refreshing taste
-            of Coca-Cola Zero Sugar, delivering the iconic boldness you love,
-            without the sugar.
-          </p>
+            <p className="mt-6 text-white/80 text-sm leading-relaxed">
+              Zero Sugar, Maximum Flavor – Dive into the crisp, refreshing taste
+              of Coca-Cola Zero Sugar, delivering the iconic boldness you love,
+              without the sugar.
+            </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-4">
-            <button className="bg-black text-white px-6 py-3 rounded-full border border-white hover:bg-white hover:text-black transition">
-              Shop Now
-            </button>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <button className="bg-black text-white px-6 py-3 rounded-full border border-white hover:bg-white hover:text-black transition">
+                Shop Now
+              </button>
 
-            <button className="bg-red-800 text-white px-6 py-3 rounded-lg flex items-center justify-between gap-2">
-              View Nutrition Facts
-              <span><ArrowDownIcon /></span>
-            </button>
+              <button className="bg-red-800 text-white px-6 py-3 rounded-lg flex items-center justify-between gap-2">
+                View Nutrition Facts
+                <span>
+                  <ArrowDownIcon />
+                </span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       </section>
 
-      <div className="w-full bg-black overflow-hidden">
-        <div className="container w-full">
-          <div className="panel flex items-center">
-            <h2>Scroll down to animate horizontally &gt;</h2>
+      <section className="w-full flex items-center justify-center bg-black text-white font-bold">
+        Scroll down to animate horizontally
+      </section>
+
+      <div className="w-full bg-black">
+        <div className="container-product w-full text-white">
+          <div className="panel flex items-center justify-center">
+            <h2 className="text-6xl font-bold">Scroll to explore →</h2>
           </div>
 
-          <section className="panel">
-          And this is magic
-            <div className="box-1 box flex flex-col w-100">
-              <h2>Zero Sugar, Zero Calories</h2>
-              <p>Enjoy the classic Coca-Cola taste without sugar or calories. Perfect for those who want to reduce sugar intake while still enjoying a refreshing soda.</p>
-            </div>
-
-
-          </section>
-
-          <section className="panel">
-            And this is magic
-            <div className="box-2 box flex flex-col">
-              <h2>Authentic Coca-Cola Taste</h2>
-              <p>Specially formulated to deliver a bold, crisp flavor that closely matches original Coca-Cola, giving you the same satisfaction without compromise.</p>
+          <section className="panel flex">
+            <div className="box-1 box flex flex-col max-w-2xl px-8">
+              <h2 className="text-7xl font-bold mb-8 leading-tight">
+                Zero Sugar,<br />Zero Calories
+              </h2>
+              <p className="text-2xl text-white/80 leading-relaxed">
+                Enjoy the classic Coca-Cola taste without sugar or calories.
+              </p>
             </div>
           </section>
 
-          <section className="panel">
-          <div className="box-3 box flex flex-col">
-              <h2>No Guilt Refreshment</h2>
-              <p>Ideal for an active and health-conscious lifestyle. Coca-Cola Zero Sugar fits easily into daily routines without affecting calorie goals.</p>
+          <section className="panel flex">
+            <div className="box-2 box flex flex-col max-w-2xl px-8">
+              <h2 className="text-7xl font-bold mb-8 leading-tight">
+                Authentic<br />Coca-Cola Taste
+              </h2>
+              <p className="text-2xl text-white/80 leading-relaxed">
+                Bold, crisp flavor that closely matches the original.
+              </p>
             </div>
           </section>
 
-          <section className="panel">
-            <div className="box-4 box flex flex-col">
-              <h2>Perfect for Any Occasion</h2>
-              <p>Whether at meals, parties, workouts, or on the go, Coca-Cola Zero Sugar provides refreshing enjoyment anytime, anywhere.</p>
+          <section className="panel flex">
+            <div className="box-3 box flex flex-col max-w-2xl px-8">
+              <h2 className="text-7xl font-bold mb-8 leading-tight">
+                No Guilt<br />Refreshment
+              </h2>
+              <p className="text-2xl text-white/80 leading-relaxed">
+                Perfect for an active and health-conscious lifestyle.
+              </p>
+            </div>
+          </section>
+
+          <section className="panel flex">
+            <div className="box-4 box flex flex-col max-w-2xl px-8">
+              <h2 className="text-7xl font-bold mb-8 leading-tight">
+                Perfect for<br />Any Occasion
+              </h2>
+              <p className="text-2xl text-white/80 leading-relaxed">
+                Refreshing enjoyment anytime, anywhere.
+              </p>
             </div>
           </section>
         </div>
       </div>
 
-      <div ref={containerRef} id="container3d"></div>
+      <div className="features">
+        <div className="container-feature flex flex-horizontal">
+          {/* Panel 1: Coca-Cola Zero Sugar */}
+          <div className="panel">
+            <div className="bg-gradient-to-br from-neutral-900 via-black to-neutral-800 h-full flex items-center justify-center p-12">
+              <div className="grid grid-cols-2 gap-12 max-w-7xl w-full">
+                {/* Left: Product Info */}
+                <div className="text-white space-y-8">
+                  <div>
+                    <h3 className="text-6xl font-black mb-4 bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
+                      Coca-Cola Zero Sugar
+                    </h3>
+                    <p className="text-xl text-white/70 leading-relaxed">
+                      Experience the iconic Coca-Cola taste with zero sugar and zero calories.
+                      Perfect for those who want bold flavor without compromise.
+                    </p>
+                  </div>
+
+                  {/* Available Sizes */}
+                  <div>
+                    <h4 className="text-2xl font-bold mb-4 text-red-500">Available Sizes</h4>
+                    <div className="flex gap-4">
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-red-500 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-red-500">330ml</div>
+                        <div className="text-sm text-white/60">Can</div>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-red-500 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-red-500">500ml</div>
+                        <div className="text-sm text-white/60">Bottle</div>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-red-500 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-red-500">1.5L</div>
+                        <div className="text-sm text-white/60">Bottle</div>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-red-500 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-red-500">2L</div>
+                        <div className="text-sm text-white/60">Bottle</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nutrition Facts */}
+                  <div>
+                    <h4 className="text-2xl font-bold mb-4 text-red-500">Nutrition Facts</h4>
+                    <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+                      <div className="text-sm text-white/50 mb-3">Per 330ml Serving</div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Calories</span>
+                          <span className="font-bold text-white">0</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Sugar</span>
+                          <span className="font-bold text-white">0g</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Sodium</span>
+                          <span className="font-bold text-white">40mg</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Caffeine</span>
+                          <span className="font-bold text-white">34mg</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: 3D Model & Product Image */}
+                <div className="flex flex-col gap-6">
+                  <div className="w-full h-96 bg-gradient-to-br from-neutral-800 to-neutral-900 rounded-2xl shadow-2xl overflow-hidden border border-white/10">
+                    <ThreeViewerHome modelUrl="https://res.cloudinary.com/dlwenphlw/image/upload/v1766163232/zeroCoke_gbfbnd.glb" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="aspect-square bg-gradient-to-br from-red-900/20 to-black rounded-lg border border-white/10 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                    <div className="aspect-square bg-gradient-to-br from-red-900/20 to-black rounded-lg border border-white/10 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                    <div className="aspect-square bg-gradient-to-br from-red-900/20 to-black rounded-lg border border-white/10 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel 2: Coca-Cola Classic */}
+          <div className="panel">
+            <div className="bg-gradient-to-br from-red-900 via-red-800 to-red-950 h-full flex items-center justify-center p-12">
+              <div className="grid grid-cols-2 gap-12 max-w-7xl w-full">
+                {/* Left: Product Info */}
+                <div className="text-white space-y-8">
+                  <div>
+                    <h3 className="text-6xl font-black mb-4 text-white drop-shadow-lg">
+                      Coca-Cola Classic
+                    </h3>
+                    <p className="text-xl text-white/80 leading-relaxed">
+                      The original and iconic taste that has refreshed the world for over a century.
+                      Timeless, bold, and unmistakably Coca-Cola.
+                    </p>
+                  </div>
+
+                  {/* Available Sizes */}
+                  <div>
+                    <h4 className="text-2xl font-bold mb-4 text-white">Available Sizes</h4>
+                    <div className="flex gap-4">
+                      <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30 hover:border-white transition cursor-pointer">
+                        <div className="text-3xl font-bold text-white">330ml</div>
+                        <div className="text-sm text-white/70">Can</div>
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30 hover:border-white transition cursor-pointer">
+                        <div className="text-3xl font-bold text-white">500ml</div>
+                        <div className="text-sm text-white/70">Bottle</div>
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30 hover:border-white transition cursor-pointer">
+                        <div className="text-3xl font-bold text-white">1.5L</div>
+                        <div className="text-sm text-white/70">Bottle</div>
+                      </div>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 border border-white/30 hover:border-white transition cursor-pointer">
+                        <div className="text-3xl font-bold text-white">2L</div>
+                        <div className="text-sm text-white/70">Bottle</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nutrition Facts */}
+                  <div>
+                    <h4 className="text-2xl font-bold mb-4 text-white">Nutrition Facts</h4>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                      <div className="text-sm text-white/60 mb-3">Per 330ml Serving</div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex justify-between items-center border-b border-white/20 pb-2">
+                          <span className="text-white/80">Calories</span>
+                          <span className="font-bold text-white">139</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/20 pb-2">
+                          <span className="text-white/80">Sugar</span>
+                          <span className="font-bold text-white">35g</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/20 pb-2">
+                          <span className="text-white/80">Sodium</span>
+                          <span className="font-bold text-white">45mg</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/20 pb-2">
+                          <span className="text-white/80">Caffeine</span>
+                          <span className="font-bold text-white">34mg</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: 3D Model & Product Image */}
+                <div className="flex flex-col gap-6">
+                  <div className="w-full h-96 bg-gradient-to-br from-red-700 to-red-950 rounded-2xl shadow-2xl overflow-hidden border border-white/20">
+                    <ThreeViewerHome modelUrl="https://res.cloudinary.com/dlwenphlw/image/upload/v1766163232/zeroCoke_gbfbnd.glb" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="aspect-square bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                    <div className="aspect-square bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                    <div className="aspect-square bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel 3: Diet Coca-Cola */}
+          <div className="panel">
+            <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 h-full flex items-center justify-center p-12">
+              <div className="grid grid-cols-2 gap-12 max-w-7xl w-full">
+                {/* Left: Product Info */}
+                <div className="text-white space-y-8">
+                  <div>
+                    <h3 className="text-6xl font-black mb-4 bg-gradient-to-r from-slate-200 to-slate-400 bg-clip-text text-transparent">
+                      Diet Coca-Cola
+                    </h3>
+                    <p className="text-xl text-white/70 leading-relaxed">
+                      Light, crisp, and refreshing with a distinct flavor profile.
+                      The perfect choice for a lighter alternative with zero calories.
+                    </p>
+                  </div>
+
+                  {/* Available Sizes */}
+                  <div>
+                    <h4 className="text-2xl font-bold mb-4 text-slate-300">Available Sizes</h4>
+                    <div className="flex gap-4">
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-slate-300 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-slate-300">330ml</div>
+                        <div className="text-sm text-white/60">Can</div>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-slate-300 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-slate-300">500ml</div>
+                        <div className="text-sm text-white/60">Bottle</div>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-slate-300 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-slate-300">1.5L</div>
+                        <div className="text-sm text-white/60">Bottle</div>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-slate-300 transition cursor-pointer">
+                        <div className="text-3xl font-bold text-slate-300">2L</div>
+                        <div className="text-sm text-white/60">Bottle</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nutrition Facts */}
+                  <div>
+                    <h4 className="text-2xl font-bold mb-4 text-slate-300">Nutrition Facts</h4>
+                    <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+                      <div className="text-sm text-white/50 mb-3">Per 330ml Serving</div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Calories</span>
+                          <span className="font-bold text-white">1</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Sugar</span>
+                          <span className="font-bold text-white">0g</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Sodium</span>
+                          <span className="font-bold text-white">40mg</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                          <span className="text-white/70">Caffeine</span>
+                          <span className="font-bold text-white">46mg</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: 3D Model & Product Image */}
+                <div className="flex flex-col gap-6">
+                  <div className="w-full h-96 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-white/10">
+                    <ThreeViewerHome modelUrl="https://res.cloudinary.com/dlwenphlw/image/upload/v1766163232/zeroCoke_gbfbnd.glb" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="aspect-square bg-gradient-to-br from-slate-600/20 to-black rounded-lg border border-white/10 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                    <div className="aspect-square bg-gradient-to-br from-slate-600/20 to-black rounded-lg border border-white/10 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                    <div className="aspect-square bg-gradient-to-br from-slate-600/20 to-black rounded-lg border border-white/10 flex items-center justify-center">
+                      <span className="text-6xl">🥤</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="w-sceen h-screen "></div>
-    </>
+
+      <div ref={containerRef} id="container3d"></div>
+    </div>
   );
 }

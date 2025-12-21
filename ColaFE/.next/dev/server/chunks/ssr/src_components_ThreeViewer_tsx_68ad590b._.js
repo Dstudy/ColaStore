@@ -62,33 +62,59 @@ function ThreeViewer({ modelUrl }) {
         controls.enableZoom = false;
         controls.enablePan = false;
         controls.autoRotate = false;
-        const testCube = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Mesh"](new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["BoxGeometry"](1, 1, 1), new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["MeshStandardMaterial"]({
-            color: "red"
-        }));
-        scene.add(testCube);
+        // Mặc định tắt controls để tránh xoay khi click ra ngoài ngay từ đầu
+        controls.enabled = false;
         /* Load GLTF */ const loader = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$examples$2f$jsm$2f$loaders$2f$GLTFLoader$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["GLTFLoader"]();
-        let model;
+        // Biến để lưu trữ tham chiếu đến model cho việc Raycasting
+        let loadedModel = null;
         loader.load(modelUrl, (gltf)=>{
-            model = gltf.scene;
-            /* 🔥 Auto-scale to fit */ const box = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Box3"]().setFromObject(model);
+            loadedModel = gltf.scene; // Lưu tham chiếu model
+            /* 🔥 Auto-scale to fit */ const box = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Box3"]().setFromObject(loadedModel);
             const size = box.getSize(new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Vector3"]()).length();
             const center = box.getCenter(new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Vector3"]());
             console.log("Model loaded. Size:", size, "Center:", center);
             if (size === 0) {
                 console.error("Model has 0 size. Check if it contains meshes.");
             }
-            model.position.sub(center);
-            const scale = 1.5 / size || 1; // Avoid divide by zero
-            model.scale.setScalar(scale);
-            scene.add(model);
-            console.log("load model successfully " + model.name + "-" + scale);
+            loadedModel.position.set(0, -0.5, 0);
+            const scale = 1.5 / size || 1;
+            loadedModel.scale.setScalar(scale);
+            scene.add(loadedModel);
+            console.log("load model successfully");
         }, (xhr)=>{
             console.log(xhr.loaded / xhr.total * 100 + "% loaded");
         }, (error)=>{
             console.error("An error happened loading the model:", error);
             setError("Error loading model: " + error.message);
         });
-        /* Animation */ const animate = ()=>{
+        /* 🔥 LOGIC MỚI: Raycasting để kiểm tra click chuột */ const raycaster = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Raycaster"]();
+        const mouse = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$three$2f$build$2f$three$2e$core$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Vector2"]();
+        const onPointerDown = (event)=>{
+            // Nếu chưa load xong model thì không làm gì cả
+            if (!loadedModel) return;
+            // 1. Tính toán tọa độ chuột chuẩn hóa (Normalized Device Coordinates) (-1 đến +1)
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = (event.clientX - rect.left) / rect.width * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+            // 2. Cập nhật tia chiếu từ camera
+            raycaster.setFromCamera(mouse, camera);
+            // 3. Kiểm tra va chạm với model (recursive = true để kiểm tra tất cả mesh con)
+            const intersects = raycaster.intersectObject(loadedModel, true);
+            // 4. Nếu có va chạm -> Bật controls. Không thì tắt.
+            if (intersects.length > 0) {
+                controls.enabled = true;
+            } else {
+                controls.enabled = false;
+            }
+        };
+        // Lắng nghe sự kiện pointerdown (chuột nhấn xuống)
+        // Sử dụng { capture: true } để đảm bảo logic của ta chạy trước logic của OrbitControls
+        renderer.domElement.addEventListener("pointerdown", onPointerDown, {
+            capture: true
+        });
+        /* Logic phụ: Khi nhả chuột, ta có thể giữ controls enabled hoặc tắt nó.
+       Để trải nghiệm mượt mà, ta cứ để nó enabled cho đến lần click tiếp theo.
+       Tuy nhiên, nếu muốn chặt chẽ, bạn có thể thêm sự kiện pointerup. */ /* Animation */ const animate = ()=>{
             requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
@@ -103,6 +129,9 @@ function ThreeViewer({ modelUrl }) {
         window.addEventListener("resize", onResize);
         /* Cleanup */ return ()=>{
             window.removeEventListener("resize", onResize);
+            renderer.domElement.removeEventListener("pointerdown", onPointerDown, {
+                capture: true
+            });
             renderer.dispose();
             mountRef.current?.removeChild(renderer.domElement);
         };
@@ -114,7 +143,7 @@ function ThreeViewer({ modelUrl }) {
         className: "w-full h-full"
     }, void 0, false, {
         fileName: "[project]/src/components/ThreeViewer.tsx",
-        lineNumber: 147,
+        lineNumber: 179,
         columnNumber: 10
     }, this);
 }

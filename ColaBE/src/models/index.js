@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import { Op } from "sequelize";
 import Product from "./product.js";
 import ProductImage from "./productImage.js";
+import ProductDetails from "./productDetails.js";
 import User from "./user.js";
 import Role from "./role.js";
 import Cart from "./cart.js";
@@ -11,6 +12,7 @@ import OrderItem from "./orderItem.js";
 import Analytics from "./analytics.js";
 import Size from "./size.js";
 import ProductVariant from "./productVariant.js";
+import ProductType from "./productType.js";
 
 // ✅ Initialize Sequelize
 const sequelize = new Sequelize("colastore", "root", "1", {
@@ -24,8 +26,10 @@ const sequelize = new Sequelize("colastore", "root", "1", {
 const models = {
   Product: Product(sequelize),
   ProductImage: ProductImage(sequelize),
+  ProductDetails: ProductDetails(sequelize),
   Size: Size(sequelize),
   ProductVariant: ProductVariant(sequelize),
+  ProductType: ProductType(sequelize),
   User: User(sequelize),
   Role: Role(sequelize),
   Cart: Cart(sequelize),
@@ -62,6 +66,23 @@ models.Size.hasMany(models.ProductVariant, {
 models.ProductVariant.belongsTo(models.Size, {
   foreignKey: "size_id",
   allowNull: true, // Explicitly allow null for size_id
+});
+
+// --- Product Details ---
+models.Product.hasOne(models.ProductDetails, {
+  foreignKey: "productId",
+  as: "ProductDetails", // Use plural to match frontend expectations
+});
+models.ProductDetails.belongsTo(models.Product, {
+  foreignKey: "productId",
+});
+
+// --- Product Types ---
+models.ProductType.hasMany(models.Product, {
+  foreignKey: "productTypeId",
+});
+models.Product.belongsTo(models.ProductType, {
+  foreignKey: "productTypeId",
 });
 
 // --- Users & Roles ---

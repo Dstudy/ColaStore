@@ -9,6 +9,7 @@ import {
 } from "@/types/product";
 import { ShoppingCart } from "lucide-react";
 import { toast } from "react-toastify";
+import ThreeViewer from "@/components/ThreeViewer";
 
 interface PageParams {
   slug: string;
@@ -33,6 +34,8 @@ export default function ProductDetailPage({ params }: PageProps) {
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0); // For image/3D viewer switching
+  const [isNutritionExpanded, setIsNutritionExpanded] = useState(false); // For collapsible nutrition info
 
   // In newer Next.js versions, `params` may be passed as a Promise in client components
   const resolvedParams =
@@ -51,7 +54,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     // Check if user is logged in
     const token = localStorage.getItem("auth_token");
     const userStr = localStorage.getItem("user");
-    
+
     if (token && userStr) {
       setIsLoggedIn(true);
       try {
@@ -63,6 +66,8 @@ export default function ProductDetailPage({ params }: PageProps) {
         console.error("Error parsing user data:", error);
       }
     }
+
+
   }, []);
 
   useEffect(() => {
@@ -70,6 +75,15 @@ export default function ProductDetailPage({ params }: PageProps) {
     if (data?.product?.hasSize && data.product.ProductVariants && data.product.ProductVariants.length > 0) {
       setSelectedSize(data.product.ProductVariants[0].id);
     }
+
+    // Set 3D viewer as default view if product has 3DUrl
+    if (data?.product?.["3DUrl"]) {
+      setSelectedImageIndex(-1); // -1 represents 3D viewer
+    } else {
+      setSelectedImageIndex(0); // Default to first image
+    }
+
+    console.log(data);
   }, [data]);
 
   if (isLoading) {
@@ -165,23 +179,38 @@ export default function ProductDetailPage({ params }: PageProps) {
         <div className="grid gap-10 md:grid-cols-2">
           {/* Images */}
           <section>
-            {mainImage && (
-              <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-xl border border-gray-200 bg-white">
-                <Image
-                  src={mainImage.pic_url}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
+            {/* Main Display Area */}
+            <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-xl border border-gray-200 bg-white">
+              {selectedImageIndex === -1 && product["3DUrl"] ? (
+                // Show 3D Viewer
+                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-white">
+                  <ThreeViewer modelUrl={product["3DUrl"]} />
+                </div>
+              ) : (
+                // Show Selected Image
+                mainImage && (
+                  <Image
+                    src={product.ProductImages[selectedImageIndex]?.pic_url || mainImage.pic_url}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                  />
+                )
+              )}
+            </div>
 
-            {product.ProductImages.length > 1 && (
-              <div className="flex gap-3">
-                {product.ProductImages.map((img) => (
-                  <div
+            {/* Thumbnails */}
+            {(product.ProductImages.length > 1 || product["3DUrl"]) && (
+              <div className="flex gap-3 flex-wrap">
+                {/* Image Thumbnails */}
+                {product.ProductImages.map((img, index) => (
+                  <button
                     key={img.id}
-                    className="relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200 bg-white"
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`relative h-20 w-20 overflow-hidden rounded-lg border-2 transition-all ${selectedImageIndex === index
+                      ? "border-black scale-105"
+                      : "border-gray-200 hover:border-gray-400"
+                      }`}
                   >
                     <Image
                       src={img.pic_url}
@@ -189,8 +218,36 @@ export default function ProductDetailPage({ params }: PageProps) {
                       fill
                       className="object-cover"
                     />
-                  </div>
+                  </button>
                 ))}
+
+                {/* 3D Viewer Thumbnail */}
+                {product["3DUrl"] && (
+                  <button
+                    onClick={() => setSelectedImageIndex(-1)}
+                    className={`relative h-20 w-20 overflow-hidden rounded-lg border-2 transition-all flex items-center justify-center ${selectedImageIndex === -1
+                      ? "border-black bg-black text-white scale-105"
+                      : "border-gray-200 bg-gradient-to-br from-gray-100 to-gray-200 hover:border-gray-400"
+                      }`}
+                  >
+                    <div className="text-center">
+                      <svg
+                        className="w-8 h-8 mx-auto mb-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
+                        />
+                      </svg>
+                      <span className="text-[10px] font-medium">3D</span>
+                    </div>
+                  </button>
+                )}
               </div>
             )}
           </section>
@@ -221,6 +278,112 @@ export default function ProductDetailPage({ params }: PageProps) {
               </p>
             </div>
 
+            {/* Nutritional Information - Collapsible */}
+            {product.ProductDetails && (
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setIsNutritionExpanded(!isNutritionExpanded)}
+                  className="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
+                >
+                  <h2 className="text-base font-bold text-gray-900">
+                    Dinh dưỡng
+                  </h2>
+                  <svg
+                    className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${isNutritionExpanded ? "rotate-180" : ""
+                      }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {isNutritionExpanded && (
+                  <div className="px-4 py-4 bg-white border-t border-gray-200">
+                    {/* Serving Size */}
+                    <div className="mb-4 pb-3 border-b border-gray-200">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-semibold text-gray-900 uppercase">
+                          GIÁ TRỊ DINH DƯỠNG TRONG
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {product.ProductDetails.serving_size}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Nutritional Values */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-sm text-gray-900 uppercase">
+                          NĂNG LƯỢNG
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {product.ProductDetails.energy_kcal} kcal
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-sm text-gray-900 uppercase">
+                          CHẤT ĐẠM
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {product.ProductDetails.protein} g
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-sm text-gray-900 uppercase">
+                          CHẤT BÉO
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {product.ProductDetails.fat} g
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-sm text-gray-900 uppercase">
+                          CARBOHYDRATE
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {product.ProductDetails.carbohydrates} g
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-sm text-gray-900 uppercase">
+                          ĐƯỜNG
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {product.ProductDetails.sugars} g
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-sm text-gray-900 uppercase">
+                          NATRI
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          ≤ {Math.round(product.ProductDetails.fiber * 10)} mg
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Ingredients */}
+                    <div className="pt-3 border-t border-gray-200">
+                      <h3 className="text-sm font-bold text-gray-900 mb-2 uppercase">
+                        Thành phần
+                      </h3>
+                      <p className="text-sm text-gray-900 leading-relaxed uppercase">
+                        {product.ProductDetails.ingredient}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {product.hasSize && product.ProductVariants && product.ProductVariants.length > 0 && (
               <div>
                 <h2 className="mb-3 text-sm font-semibold tracking-wide text-gray-700">
@@ -230,11 +393,10 @@ export default function ProductDetailPage({ params }: PageProps) {
                   {product.ProductVariants?.map((variant) => (
                     <label
                       key={variant.id}
-                      className={`flex cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition ${
-                        selectedSize === variant.id
-                          ? "border-black bg-black text-white"
-                          : "border-gray-300 text-gray-800 hover:border-black"
-                      }`}
+                      className={`flex cursor-pointer items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition ${selectedSize === variant.id
+                        ? "border-black bg-black text-white"
+                        : "border-gray-300 text-gray-800 hover:border-black"
+                        }`}
                     >
                       <input
                         type="radio"
