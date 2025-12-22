@@ -7,6 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import ThreeViewerHome from "@/components/ThreeViewerHome";
+import AboutCard from "@/components/AboutCard";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -755,7 +756,97 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="w-sceen h-screen "></div>
+      {/* About Us Section */}
+      <section className="about-us relative min-h-screen bg-gradient-to-br from-neutral-950 via-black to-red-950 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(220,38,38,0.3),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(220,38,38,0.2),transparent_50%)]" />
+        </div>
+
+        <div className="relative z-10 container mx-auto px-6 md:px-12 lg:px-20 py-20">
+          {/* Header Section */}
+          <div className="max-w-5xl mx-auto text-center mb-16">
+            {/* Title */}
+            <h2 className="title text-6xl md:text-8xl font-black mb-8 bg-gradient-to-r from-red-500 via-red-600 to-red-700 bg-clip-text text-transparent animate-pulse">
+              Coca-Cola
+            </h2>
+
+            {/* Decorative Line */}
+            <div className="flex items-center justify-center gap-4 mb-12">
+              <div className="h-1 w-24 bg-gradient-to-r from-transparent to-red-500 rounded-full" />
+              <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse" />
+              <div className="h-1 w-24 bg-gradient-to-l from-transparent to-red-500 rounded-full" />
+            </div>
+
+            {/* Description */}
+            <div className="description text-white/80 text-lg md:text-xl leading-relaxed space-y-6 max-w-4xl mx-auto">
+              <p>
+                On May 8, 1886, Dr. John Pemberton brought his perfected syrup to Jacobs' Pharmacy in downtown Atlanta where the first glass of Coca‑Cola was poured. From that one iconic drink, we've evolved into a total beverage company. More than 2.2 billion servings of our drinks are enjoyed in more than 200 countries and territories each day.
+              </p>
+              <p>
+                We are constantly transforming our portfolio, from reducing added sugar in our drinks to bringing innovative new products to market. We seek to positively impact people's lives, communities and the planet through water replenishment, packaging recycling, sustainable sourcing practices and carbon emissions reductions across our value chain. Together with our bottling partners, we employ more than 700,000 people, helping bring economic opportunity to local communities worldwide.
+              </p>
+            </div>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mt-20">
+            <div className="about-card transform transition-all duration-500 hover:-translate-y-2">
+              <AboutCard
+                title="Our Purpose"
+                description="To refresh the world and make a difference. We are committed to offering people more of the drinks they want across a range of categories and sizes while driving sustainable solutions that build resilience into our business and create positive change for the planet."
+                variant="glass"
+              />
+            </div>
+            <div className="about-card transform transition-all duration-500 hover:-translate-y-2">
+              <AboutCard
+                title="Innovation & Quality"
+                description="We continuously innovate to bring you the best beverages, from zero sugar options to new flavors. Our commitment to quality ensures every sip delivers the refreshment you expect from Coca-Cola."
+                variant="glass"
+              />
+            </div>
+            <div className="about-card transform transition-all duration-500 hover:-translate-y-2">
+              <AboutCard
+                title="Sustainability"
+                description="Building a more sustainable future through water stewardship, packaging innovation, and carbon reduction. Together with our partners, we're creating positive environmental impact in communities worldwide."
+                variant="glass"
+              />
+            </div>
+          </div>
+
+          {/* Stats Section */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto mt-20 pt-16 border-t border-white/10">
+            <div className="text-center">
+              <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-2">
+                2.2B
+              </div>
+              <div className="text-white/60 text-sm md:text-base font-medium">Daily Servings</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-2">
+                200+
+              </div>
+              <div className="text-white/60 text-sm md:text-base font-medium">Countries</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-2">
+                700K+
+              </div>
+              <div className="text-white/60 text-sm md:text-base font-medium">Employees</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-2">
+                1886
+              </div>
+              <div className="text-white/60 text-sm md:text-base font-medium">Since</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Gradient Fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent" />
+      </section>
 
       <div ref={containerRef} id="container3d"></div>
     </div>

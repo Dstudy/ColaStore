@@ -38,7 +38,7 @@ export default function Header() {
     // Check if user is logged in
     const token = localStorage.getItem("auth_token");
     const userStr = localStorage.getItem("user");
-    
+
     if (token && userStr) {
       setIsLoggedIn(true);
       try {
@@ -88,7 +88,7 @@ export default function Header() {
 
   const fetchCartItems = async () => {
     if (!isLoggedIn || !userId) return;
-    
+
     try {
       const token = localStorage.getItem("auth_token");
       const response = await fetch(
@@ -101,7 +101,7 @@ export default function Header() {
       );
 
       const data: CartResponse = await response.json();
-      
+
       if (data.errCode === 0 && data.data?.items) {
         setCartItemCount(data.data.items.length);
       }
@@ -132,7 +132,7 @@ export default function Header() {
   const links = [
     { name: "Home", href: "/" },
     { name: "Shop", href: "/shop" },
-    { name: "Contact", href: "/contact" },
+    { name: "About us", href: "/about" },
   ];
 
   const navlinks = links.map((link) => (
@@ -227,6 +227,15 @@ export default function Header() {
                         >
                           <span className="font-medium">Manage Account</span>
                         </Link>
+
+                        <Link
+                          href="/orders"
+                          onClick={() => setShowDropdown(false)}
+                          className="flex items-center px-5 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                        >
+                          <span className="font-medium">My Orders</span>
+                        </Link>
+
                         <button
                           onClick={handleLogout}
                           className="w-full text-left px-5 py-3 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors duration-150"
