@@ -18,12 +18,22 @@ export default (sequelize) =>
         allowNull: false,
         defaultValue: 0,
       },
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       tableName: "product_variants",
-      timestamps: false,
+      timestamps: true,
+      updatedAt: "updatedAt",
+      createdAt: "createdAt",
     }
   );
 

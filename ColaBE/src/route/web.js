@@ -24,6 +24,7 @@ const initWebRoutes = (app) => {
 
   // Admin Product routes
   router.get("/api/admin/products", adminProductController.getAllProducts);
+  router.get("/api/admin/product-types", adminProductController.getAllProductTypes);
   router.get("/api/admin/products/:id", adminProductController.getProductById);
   router.post("/api/admin/products", adminProductController.createProduct);
   router.put("/api/admin/products/:id", adminProductController.updateProduct);

@@ -25,6 +25,7 @@ const getAllProducts = () => {
             ],
           },
         ],
+        order: [["createdAt", "DESC"]], // Newest first
       });
       resolve(products);
     } catch (error) {
@@ -75,11 +76,27 @@ const createProduct = (productData) => {
     try {
       const t = await sequelize.transaction();
       try {
-        const { variations, variants, ...productFields } = productData;
+        const { variations, variants, imageUrl, ...productFields } = productData;
 
-        const product = await db.Product.create(productFields, {
+        const product = await db.Product.create({
+          ...productFields,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }, {
           transaction: t,
         });
+
+        // Handle single image URL (new approach)
+        if (imageUrl) {
+          await db.ProductImage.create(
+            {
+              product_id: product.id,
+              pic_url: imageUrl,
+              display_order: 1,
+            },
+            { transaction: t }
+          );
+        }
 
         // Handle images (legacy `variations` payload)
         if (Array.isArray(variations)) {
@@ -109,6 +126,8 @@ const createProduct = (productData) => {
                 product_id: product.id,
                 size_id: v.size_id || null, // Allow null size_id
                 stock: v.stock,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
               { transaction: t }
             );
@@ -126,6 +145,8 @@ const createProduct = (productData) => {
               product_id: product.id,
               size_id: null,
               stock: 0,
+              createdAt: new Date(),
+              updatedAt: new Date(),
             },
             { transaction: t }
           );
@@ -158,7 +179,7 @@ const updateProduct = (id, updateData) => {
     try {
       const t = await sequelize.transaction();
       try {
-        const { variations, variants, ...productFields } = updateData;
+        const { variations, variants, imageUrl, ...productFields } = updateData;
         const [updatedRowsCount] = await db.Product.update(productFields, {
           where: { id },
           transaction: t,
@@ -166,6 +187,27 @@ const updateProduct = (id, updateData) => {
         if (updatedRowsCount === 0) {
           await t.rollback();
           return resolve(null);
+        }
+
+        // Handle single image URL (new approach)
+        if (imageUrl !== undefined) {
+          // Remove existing images
+          await db.ProductImage.destroy({
+            where: { product_id: id },
+            transaction: t,
+          });
+
+          // Add new image if URL is provided
+          if (imageUrl) {
+            await db.ProductImage.create(
+              {
+                product_id: id,
+                pic_url: imageUrl,
+                display_order: 1,
+              },
+              { transaction: t }
+            );
+          }
         }
 
         // Update images (legacy `variations` payload)
@@ -215,6 +257,8 @@ const updateProduct = (id, updateData) => {
                 product_id: id,
                 size_id: v.size_id || null, // Allow null size_id
                 stock: v.stock,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               },
               { transaction: t }
             );
@@ -318,8 +362,23 @@ const toggleProductActive = (id) => {
   });
 };
 
+const getAllProductTypes = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const productTypes = await db.ProductType.findAll({
+        attributes: ["id", "name", "description"],
+        order: [["name", "ASC"]],
+      });
+      resolve(productTypes);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 export default {
   getAllProducts,
+  getAllProductTypes,
   getProductById,
   createProduct,
   updateProduct,

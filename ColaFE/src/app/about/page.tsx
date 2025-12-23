@@ -16,14 +16,14 @@ export default function AboutPage() {
 
                 <div className="relative z-10 container mx-auto px-6 md:px-12 lg:px-20 py-32 text-center">
                     {/* Title */}
-                    <h1 className="text-7xl md:text-9xl font-black mb-8 bg-gradient-to-r from-red-500 via-red-600 to-red-700 bg-clip-text text-transparent animate-pulse">
+                    <h1 className="text-7xl md:text-9xl font-black mb-8 bg-gradient-to-r from-red-500 via-red-600 to-red-700 bg-clip-text text-transparent">
                         Coca-Cola
                     </h1>
 
                     {/* Decorative Line */}
                     <div className="flex items-center justify-center gap-4 mb-12">
                         <div className="h-1 w-24 bg-gradient-to-r from-transparent to-red-500 rounded-full" />
-                        <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse" />
+                        <div className="h-2 w-2 bg-red-500 rounded-full" />
                         <div className="h-1 w-24 bg-gradient-to-l from-transparent to-red-500 rounded-full" />
                     </div>
 
@@ -37,9 +37,9 @@ export default function AboutPage() {
                     </p>
 
                     {/* Scroll Indicator */}
-                    <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2">
                         <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
-                            <div className="w-1 h-3 bg-white/50 rounded-full animate-pulse" />
+                            <div className="w-1 h-3 bg-white/50 rounded-full" />
                         </div>
                     </div>
                 </div>

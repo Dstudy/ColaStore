@@ -18,12 +18,22 @@ export default (sequelize) => {
       isFeatured: { type: DataTypes.BOOLEAN, defaultValue: false },
       active: { type: DataTypes.BOOLEAN, defaultValue: true },
       productTypeId: { type: DataTypes.INTEGER },
-      createdAt: DataTypes.DATE,
-      updatedAt: DataTypes.DATE,
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       tableName: "products",
-      timestamps: false,
+      timestamps: true,
+      updatedAt: "updatedAt",
+      createdAt: "createdAt",
     }
   );
 

@@ -169,8 +169,26 @@ const toggleProductActive = async (req, res) => {
   }
 };
 
+const getAllProductTypes = async (req, res) => {
+  try {
+    const productTypes = await productService.getAllProductTypes();
+    return res.status(200).json({
+      errCode: 0,
+      message: "OK",
+      productTypes: productTypes,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      errCode: 1,
+      message: "Error getting product types",
+      error: error.message,
+    });
+  }
+};
+
 export default {
   getAllProducts,
+  getAllProductTypes,
   getProductById,
   createProduct,
   updateProduct,
