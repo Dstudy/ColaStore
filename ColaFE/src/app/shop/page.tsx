@@ -28,6 +28,8 @@ export default function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
   // Debounce search input
   useEffect(() => {
@@ -38,16 +40,21 @@ export default function ShopPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Build API URL with filters
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, debouncedSearch, itemsPerPage]);
+
+  // Build API URL with filters and pagination
   const buildApiUrl = () => {
     const params = new URLSearchParams();
     if (selectedCategory) params.append("productType", selectedCategory);
     if (debouncedSearch) params.append("search", debouncedSearch);
+    params.append("page", currentPage.toString());
+    params.append("limit", itemsPerPage.toString());
 
     const queryString = params.toString();
-    return queryString
-      ? `http://localhost:8800/api/products?${queryString}`
-      : "http://localhost:8800/api/products";
+    return `http://localhost:8800/api/products?${queryString}`;
   };
 
   const { data, error, isLoading } = useSWR<ProductsListResponse>(
@@ -94,6 +101,47 @@ export default function ShopPage() {
   }
 
   const products = data.data.products;
+  const totalProducts = data.data.totalProducts || 0;
+  const totalPages = Math.ceil(totalProducts / itemsPerPage);
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxPagesToShow = 7;
+
+    if (totalPages <= maxPagesToShow) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push("...");
+      }
+
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push("...");
+      }
+
+      // Always show last page
+      if (totalPages > 1) {
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
@@ -103,7 +151,7 @@ export default function ShopPage() {
             Shop
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {data.data.totalProducts} products available
+            {totalProducts} products available
           </p>
         </div>
 
@@ -176,6 +224,28 @@ export default function ShopPage() {
           </div>
         </div>
 
+        {/* Items per page selector */}
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Show:
+            </span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+              className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            >
+              <option value={12}>12 items</option>
+              <option value={24}>24 items</option>
+              <option value={48}>48 items</option>
+            </select>
+          </div>
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalProducts)} -{" "}
+            {Math.min(currentPage * itemsPerPage, totalProducts)} of {totalProducts}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product) => (
             <Link
@@ -183,11 +253,11 @@ export default function ShopPage() {
               href={`/shop/${product.id}`}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 block"
             >
-              <div className="aspect-square w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+              <div className="aspect-square w-full overflow-hidden bg-white dark:bg-gray-100">
                 <ImageWithFallback
                   src={product.ProductImages?.[0]?.pic_url}
                   alt={product.name}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="p-4">
@@ -214,6 +284,86 @@ export default function ShopPage() {
             </Link>
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            {/* Previous Button */}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === 1
+                ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-gray-700 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
+                }`}
+            >
+              <svg
+                className="w-5 h-5 inline mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              Previous
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-2">
+              {getPageNumbers().map((page, index) =>
+                typeof page === "number" ? (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-10 h-10 rounded-lg font-medium transition-all ${currentPage === page
+                      ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-500/50"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-gray-700 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ) : (
+                  <span
+                    key={index}
+                    className="w-10 h-10 flex items-center justify-center text-gray-400 dark:text-gray-500"
+                  >
+                    {page}
+                  </span>
+                )
+              )}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === totalPages
+                ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-gray-700 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
+                }`}
+            >
+              Next
+              <svg
+                className="w-5 h-5 inline ml-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

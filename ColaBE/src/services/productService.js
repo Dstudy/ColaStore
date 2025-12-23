@@ -25,72 +25,74 @@ const getAllProducts = async (queryParams) => {
     const numericPage = parseInt(page, 10);
     const offset = (numericPage - 1) * numericLimit;
 
-    // === THAY ĐỔI: Xây dựng các tùy chọn truy vấn chung ===
-    // Chúng ta sẽ sử dụng các tùy chọn này cho cả `count` và `findAll`
-    const commonOptions = {
-      where: { active: true },
-      include: [
-        {
-          model: ProductImage,
-          attributes: ["pic_url"], // Chỉ lấy URL của ảnh
-          limit: 1, // Chỉ lấy 1 ảnh (ảnh bìa)
-          order: [["display_order", "ASC"]], // Lấy ảnh có thứ tự hiển thị đầu tiên
-          required: false, // Sử dụng LEFT JOIN (quan trọng)
-        },
-        {
-          model: ProductType,
-          attributes: ["id", "name", "description"],
-          required: false, // LEFT JOIN
-        },
-      ],
-      distinct: true, // Cần thiết cho `count` khi có include
-    };
+    // Build where clause for Product
+    const whereClause = { active: true };
 
+    // Add search filter
     if (search) {
-      commonOptions.where.name = sequelize.where(
+      whereClause.name = sequelize.where(
         sequelize.fn("LOWER", sequelize.col("Product.name")),
         { [Op.like]: `%${search.toLowerCase()}%` }
       );
     }
 
+    // Build include array
+    const includeArray = [
+      {
+        model: ProductImage,
+        attributes: ["pic_url"],
+        limit: 1,
+        order: [["display_order", "ASC"]],
+        required: false,
+      },
+      {
+        model: ProductType,
+        attributes: ["id", "name", "description"],
+        required: false,
+      },
+    ];
+
     // Filter by product type if provided
     if (productType) {
-      commonOptions.include[1].where = { name: productType };
-      commonOptions.include[1].required = true; // INNER JOIN when filtering
+      includeArray[1].where = { name: productType };
+      includeArray[1].required = true; // INNER JOIN when filtering
     }
 
-    // 1. Đếm tổng số sản phẩm khớp với bộ lọc
+    // Build common options
+    const commonOptions = {
+      where: whereClause,
+      include: includeArray,
+      distinct: true,
+    };
+
+    // 1. Count total products matching the filter
     const count = await Product.count(commonOptions);
 
-    // THAY ĐỔI: Xây dựng logic SẮP XẾP
+    // Build sort order
     let order = [];
     if (sortBy === "price-asc") {
-      // Sắp xếp theo 'price' của chính Product
       order.push(["price", "ASC"]);
     } else if (sortBy === "price-desc") {
-      // Sắp xếp theo 'price' của chính Product
       order.push(["price", "DESC"]);
     } else {
       order.push(["isFeatured", "DESC"]);
       order.push(["createdAt", "DESC"]);
     }
 
-    // 2. Tìm các sản phẩm cho trang hiện tại
+    // 2. Find products for current page
     const rows = await Product.findAll({
-      ...commonOptions, // Sử dụng lại các tùy chọn (where, include, distinct)
-      limit: numericLimit, // Thêm giới hạn
-      offset: offset, // Thêm offset
+      ...commonOptions,
+      limit: numericLimit,
+      offset: offset,
       order: order,
-      subQuery: true,
+      subQuery: false, // Changed to false to fix filtering issue
     });
 
-    // === KẾT THÚC THAY ĐỔI ===
-
     return {
-      totalProducts: count, // Sử dụng count từ truy vấn .count()
+      totalProducts: count,
       totalPages: Math.ceil(count / numericLimit),
       currentPage: numericPage,
-      products: rows, // Sử dụng rows từ truy vấn .findAll()
+      products: rows,
     };
   } catch (error) {
     console.error("Error in getAllProducts:", error);

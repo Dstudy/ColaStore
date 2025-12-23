@@ -193,7 +193,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     src={product.ProductImages[selectedImageIndex]?.pic_url || mainImage.pic_url}
                     alt={product.name}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                   />
                 )
               )}
@@ -216,7 +216,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                       src={img.pic_url}
                       alt={`${product.name} thumbnail ${img.display_order}`}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                     />
                   </button>
                 ))}

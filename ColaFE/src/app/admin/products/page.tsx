@@ -6,7 +6,7 @@ import useSWR from "swr";
 import Link from "next/link";
 import { Package, Calendar, MapPin, DollarSign, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
-import { div } from "three/tsl";
+import { createPortal } from "react-dom"
 
 interface Product {
     id: number;
@@ -65,6 +65,10 @@ export default function AdminProductsPage() {
         }
     }, [router]);
 
+    const handleEditProduct = (productId: number) => {
+        router.push(`/admin/products/${productId}`);
+    }
+
     return (
         <>
             <div>
@@ -92,6 +96,7 @@ export default function AdminProductsPage() {
                                 <p><strong>Stock:</strong> {product.stock_quantity}</p>
                                 <p><strong>Category ID:</strong> {product.category_id}</p>
                                 <p><strong>Image URL:</strong> {product.image_url}</p>
+                                <button onClick={() => handleEditProduct(product.id)}>Edit</button>
                             </div>
                         ))}
                     </div>
