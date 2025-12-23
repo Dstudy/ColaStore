@@ -23,6 +23,22 @@ export default function Home() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Auto-redirect admin users to admin dashboard
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        // If user is admin (role_id === 1), redirect to admin dashboard
+        if (Number(user.role_id) === 1) {
+          window.location.href = "/admin";
+        }
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+      }
+    }
+  }, []);
+
 
   useEffect(() => {
     if (!containerRef.current) return;

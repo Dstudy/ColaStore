@@ -26,11 +26,21 @@ export default function LoginPage() {
   // Check if user is already logged in
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
-    const user = localStorage.getItem("user");
-    
-    if (token && user) {
-      // User is already logged in, redirect to home
-      router.push("/");
+    const userStr = localStorage.getItem("user");
+
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        // Redirect based on role: admin (role_id 1) to /admin, others to home
+        if (Number(user.role_id) === 1) {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
+      } catch (e) {
+        // If parsing fails, just redirect to home
+        router.push("/");
+      }
     }
   }, [router]);
 
@@ -70,10 +80,15 @@ export default function LoginPage() {
 
       toast.success("Login successful! Welcome back!");
       setLoading(false);
-      
+
       // Small delay to show toast before redirect
       setTimeout(() => {
-        router.push("/");
+        // Redirect based on role: admin (role_id 1) to /admin, others to home
+        if (data.user && Number(data.user.role_id) === 1) {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       }, 500);
     } catch (err) {
       setLoading(false);

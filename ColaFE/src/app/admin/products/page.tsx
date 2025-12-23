@@ -6,7 +6,8 @@ import useSWR from "swr";
 import Link from "next/link";
 import { Package, Calendar, MapPin, DollarSign, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
-import { createPortal } from "react-dom"
+import { createPortal } from "react-dom";
+import AdminLayout from "@/components/AdminLayout";
 
 interface Product {
     id: number;
@@ -21,7 +22,7 @@ interface Product {
 interface ProductsResponse {
     errCode: number;
     message: string;
-    products?: Product[]; // Backend returns "products" not "data"
+    products?: Product[];
 }
 
 const fetcher = async (url: string): Promise<ProductsResponse> => {
@@ -38,70 +39,107 @@ const fetcher = async (url: string): Promise<ProductsResponse> => {
 };
 
 export default function AdminProductsPage() {
-    const { data, error, mutate } = useSWR<ProductsResponse>("http://localhost:8800/api/admin/products", fetcher);
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [products, setProducts] = useState<Product[]>([]);
-
-    useEffect(() => {
-        if (error) {
-            console.error("Error fetching products:", error);
-            setIsLoading(false);
-        } else if (data) {
-            console.log("Products data received:", data);
-            setProducts(data.products || []); // Changed from data.data to data.products
-            setIsLoading(false);
-        }
-    }, [data, error]);
+    const { data, error, isLoading } = useSWR<ProductsResponse>(
+        "http://localhost:8800/api/admin/products",
+        fetcher
+    );
 
     useEffect(() => {
         const token = localStorage.getItem("auth_token");
         if (!token) {
-            setIsAuthenticated(false);
             router.push("/login");
-        } else {
-            setIsAuthenticated(true);
         }
     }, [router]);
 
-    const handleEditProduct = (productId: number) => {
-        router.push(`/admin/products/${productId}`);
+    if (isLoading) {
+        return (
+            <AdminLayout>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading products...</p>
+                    </div>
+                </div>
+            </AdminLayout>
+        );
     }
 
+    if (error) {
+        return (
+            <AdminLayout>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <p className="text-red-600 text-lg mb-2">Error loading products</p>
+                        <p className="text-gray-600">{error.message}</p>
+                    </div>
+                </div>
+            </AdminLayout>
+        );
+    }
+
+    if (!data || data.errCode !== 0 || !data.products) {
+        return (
+            <AdminLayout>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <p className="text-gray-600">No products available</p>
+                    </div>
+                </div>
+            </AdminLayout>
+        );
+    }
+
+    const products = data.products;
+
     return (
-        <>
-            <div>
-                <h1>Products</h1>
+        <AdminLayout>
+            <div className="max-w-7xl mx-auto">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Products</h1>
+                    <p className="text-gray-600">Manage your product inventory</p>
+                </div>
 
-                {isLoading && <p>Loading products...</p>}
-
-                {error && (
-                    <div style={{ color: 'red', padding: '10px', border: '1px solid red', borderRadius: '5px' }}>
-                        <p>Error loading products: {error.message}</p>
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Product
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Price
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {products.map((product) => (
+                                    <tr key={product.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900">${product.price}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <Link
+                                                href={`/admin/products/${product.id}`}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                View Details
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                )}
-
-                {!isLoading && !error && products.length === 0 && (
-                    <p>No products found.</p>
-                )}
-
-                {!isLoading && !error && products.length > 0 && (
-                    <div>
-                        {products.map(product => (
-                            <div key={product.id} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}>
-                                <h2>{product.name}</h2>
-                                <p><strong>Description:</strong> {product.description}</p>
-                                <p><strong>Price:</strong> ${product.price}</p>
-                                <p><strong>Stock:</strong> {product.stock_quantity}</p>
-                                <p><strong>Category ID:</strong> {product.category_id}</p>
-                                <p><strong>Image URL:</strong> {product.image_url}</p>
-                                <button onClick={() => handleEditProduct(product.id)}>Edit</button>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                </div>
             </div>
-        </>
-    )
+        </AdminLayout>
+    );
 }
