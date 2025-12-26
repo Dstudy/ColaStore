@@ -7,6 +7,7 @@ import productController from "../controllers/productController.js";
 import adminProductImageController from "../controllers/admin.productImageController.js";
 import cartController from "../controllers/cartController.js";
 import orderController from "../controllers/orderController.js";
+import sizeController from "../controllers/sizeController.js";
 
 const router = express.Router();
 
@@ -89,6 +90,9 @@ const initWebRoutes = (app) => {
     "/api/products/:productId/images",
     productController.getAllProductImages
   );
+
+  // Sizes
+  router.get("/api/sizes", sizeController.getAllSizes);
 
   // Cart
   router.get("/api/users/:userId/cart", cartController.getCart);

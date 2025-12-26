@@ -9,6 +9,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import ThreeViewerHome from "@/components/ThreeViewerHome";
 import AboutCard from "@/components/AboutCard";
 
+
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -810,6 +811,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mt-20">
             <div className="about-card transform transition-all duration-500 hover:-translate-y-2">
               <AboutCard
+                image="/about/coke1.jpg"
                 title="Our Purpose"
                 description="To refresh the world and make a difference. We are committed to offering people more of the drinks they want across a range of categories and sizes while driving sustainable solutions that build resilience into our business and create positive change for the planet."
                 variant="glass"
@@ -817,6 +819,7 @@ export default function Home() {
             </div>
             <div className="about-card transform transition-all duration-500 hover:-translate-y-2">
               <AboutCard
+                image="/about/coke2.jpg"
                 title="Innovation & Quality"
                 description="We continuously innovate to bring you the best beverages, from zero sugar options to new flavors. Our commitment to quality ensures every sip delivers the refreshment you expect from Coca-Cola."
                 variant="glass"
@@ -824,6 +827,7 @@ export default function Home() {
             </div>
             <div className="about-card transform transition-all duration-500 hover:-translate-y-2">
               <AboutCard
+                image="/about/coke3.jpg"
                 title="Sustainability"
                 description="Building a more sustainable future through water stewardship, packaging innovation, and carbon reduction. Together with our partners, we're creating positive environmental impact in communities worldwide."
                 variant="glass"

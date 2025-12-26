@@ -166,7 +166,6 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
                                             <ImageWithFallback
                                                 src={img.pic_url}
                                                 alt={`${product.name} - Image ${index + 1}`}
-                                                fill
                                                 className="object-contain"
                                             />
                                             <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-xs font-semibold text-gray-700">
@@ -303,8 +302,8 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
                                     <p className="text-sm text-gray-500 mb-1">Has Sizes</p>
                                     <span
                                         className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${product.hasSize
-                                                ? "bg-green-100 text-green-800"
-                                                : "bg-gray-100 text-gray-800"
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-gray-100 text-gray-800"
                                             }`}
                                     >
                                         {product.hasSize ? "Yes" : "No"}
@@ -314,8 +313,8 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
                                     <p className="text-sm text-gray-500 mb-1">Featured</p>
                                     <span
                                         className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${product.isFeatured
-                                                ? "bg-yellow-100 text-yellow-800"
-                                                : "bg-gray-100 text-gray-800"
+                                            ? "bg-yellow-100 text-yellow-800"
+                                            : "bg-gray-100 text-gray-800"
                                             }`}
                                     >
                                         {product.isFeatured ? "Yes" : "No"}
@@ -325,8 +324,8 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
                                     <p className="text-sm text-gray-500 mb-1">Status</p>
                                     <span
                                         className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${product.active
-                                                ? "bg-green-100 text-green-800"
-                                                : "bg-red-100 text-red-800"
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-red-100 text-red-800"
                                             }`}
                                     >
                                         {product.active ? "Active" : "Inactive"}

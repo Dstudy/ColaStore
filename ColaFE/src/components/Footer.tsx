@@ -136,7 +136,7 @@ export default function Footer() {
                                 that has brought people together for over a century.
                             </p>
 
-                            {/* Contact Info */}
+                            {/* Contact Info
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
                                     <Phone className="w-4 h-4 flex-shrink-0" />
@@ -150,7 +150,7 @@ export default function Footer() {
                                     <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
                                     <span className="text-sm">One Coca-Cola Plaza<br />Atlanta, GA 30313</span>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* Shop Links */}
@@ -248,21 +248,6 @@ export default function Footer() {
                                     })}
                                 </div>
                             </div>
-
-                            {/* Payment Methods */}
-                            <div className="flex items-center gap-4">
-                                <span className="text-white/60 text-sm font-medium">We Accept:</span>
-                                <div className="flex gap-2">
-                                    {["💳", "💵", "🏦", "📱"].map((emoji, index) => (
-                                        <div
-                                            key={index}
-                                            className="w-12 h-8 rounded bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-lg hover:bg-white/20 transition-all duration-300"
-                                        >
-                                            {emoji}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -272,10 +257,10 @@ export default function Footer() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/50">
                             <p>
-                                © {new Date().getFullYear()} ColaStore. All rights reserved.
+                                © {new Date().getFullYear()} ColaStore.
                             </p>
                             <p className="flex items-center gap-1">
-                                Made with <Heart className="w-4 h-4 text-red-500 fill-current animate-pulse" /> by ColaStore Team
+                                Made with Nhóm 9 (Phúc & Dương)
                             </p>
                         </div>
                     </div>

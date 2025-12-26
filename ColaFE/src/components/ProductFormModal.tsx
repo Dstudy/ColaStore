@@ -10,6 +10,12 @@ interface ProductType {
     description: string;
 }
 
+interface SizeStock {
+    sizeId: number;
+    sizeName: string;
+    stock: string;
+}
+
 interface ProductFormData {
     name: string;
     subtitle: string;
@@ -21,6 +27,8 @@ interface ProductFormData {
     isFeatured: boolean;
     active: boolean;
     productTypeId: string;
+    stock: string; // For products without size variants
+    sizeStocks: SizeStock[]; // For products with size variants
 }
 
 interface ProductFormModalProps {
@@ -42,6 +50,8 @@ const initialFormData: ProductFormData = {
     isFeatured: false,
     active: true,
     productTypeId: "",
+    stock: "0",
+    sizeStocks: [],
 };
 
 export default function ProductFormModal({
@@ -53,13 +63,15 @@ export default function ProductFormModal({
 }: ProductFormModalProps) {
     const [formData, setFormData] = useState<ProductFormData>(initialFormData);
     const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+    const [sizes, setSizes] = useState<{ id: number; name: string }[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingTypes, setIsLoadingTypes] = useState(false);
 
-    // Fetch product types on component mount
+    // Fetch product types and sizes on component mount
     useEffect(() => {
         if (isOpen) {
             fetchProductTypes();
+            fetchSizes();
         }
     }, [isOpen]);
 
@@ -67,9 +79,27 @@ export default function ProductFormModal({
     useEffect(() => {
         if (mode === "edit" && product) {
             // Extract image URL from ProductImages array
-            const imageUrl = product.ProductImages && product.ProductImages.length > 0 
-                ? product.ProductImages[0].pic_url 
+            const imageUrl = product.ProductImages && product.ProductImages.length > 0
+                ? product.ProductImages[0].pic_url
                 : "";
+
+            // Extract stock data from ProductVariants
+            let stockValue = "0";
+            let sizeStocksValue: SizeStock[] = [];
+
+            if (product.ProductVariants && product.ProductVariants.length > 0) {
+                if (product.hasSize) {
+                    // Has size variants
+                    sizeStocksValue = product.ProductVariants.map((variant: any) => ({
+                        sizeId: variant.size_id,
+                        sizeName: variant.Size?.name || "",
+                        stock: variant.stock?.toString() || "0",
+                    }));
+                } else {
+                    // No size variants, just one stock value
+                    stockValue = product.ProductVariants[0].stock?.toString() || "0";
+                }
+            }
 
             setFormData({
                 name: product.name || "",
@@ -82,6 +112,8 @@ export default function ProductFormModal({
                 isFeatured: product.isFeatured || false,
                 active: product.active !== undefined ? product.active : true,
                 productTypeId: product.productTypeId?.toString() || "",
+                stock: stockValue,
+                sizeStocks: sizeStocksValue,
             });
         } else {
             setFormData(initialFormData);
@@ -114,17 +146,73 @@ export default function ProductFormModal({
         }
     };
 
+    const fetchSizes = async () => {
+        try {
+            const token = localStorage.getItem("auth_token");
+            const response = await fetch("http://localhost:8800/api/sizes", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch sizes");
+            }
+
+            const result = await response.json();
+            if (result.errCode === 0 && result.sizes) {
+                setSizes(result.sizes);
+                // Initialize sizeStocks when sizes are loaded
+                if (formData.hasSize && formData.sizeStocks.length === 0) {
+                    setFormData(prev => ({
+                        ...prev,
+                        sizeStocks: result.sizes.map((size: any) => ({
+                            sizeId: size.id,
+                            sizeName: size.name,
+                            stock: "0",
+                        })),
+                    }));
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching sizes:", error);
+            toast.error("Failed to load sizes");
+        }
+    };
+
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value, type } = e.target;
-        
+
         if (type === "checkbox") {
             const checked = (e.target as HTMLInputElement).checked;
-            setFormData(prev => ({
-                ...prev,
-                [name]: checked,
-            }));
+
+            // If toggling hasSize, initialize or clear sizeStocks
+            if (name === "hasSize") {
+                if (checked && sizes.length > 0) {
+                    setFormData(prev => ({
+                        ...prev,
+                        [name]: checked,
+                        sizeStocks: sizes.map(size => ({
+                            sizeId: size.id,
+                            sizeName: size.name,
+                            stock: "0",
+                        })),
+                    }));
+                } else {
+                    setFormData(prev => ({
+                        ...prev,
+                        [name]: checked,
+                        sizeStocks: [],
+                    }));
+                }
+            } else {
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: checked,
+                }));
+            }
         } else {
             setFormData(prev => ({
                 ...prev,
@@ -133,15 +221,24 @@ export default function ProductFormModal({
         }
     };
 
+    const handleSizeStockChange = (sizeId: number, stock: string) => {
+        setFormData(prev => ({
+            ...prev,
+            sizeStocks: prev.sizeStocks.map(ss =>
+                ss.sizeId === sizeId ? { ...ss, stock } : ss
+            ),
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Validation
         if (!formData.name.trim()) {
             toast.error("Product name is required");
             return;
         }
-        
+
         if (!formData.price || parseFloat(formData.price) <= 0) {
             toast.error("Valid price is required");
             return;
@@ -156,17 +253,27 @@ export default function ProductFormModal({
 
         try {
             const token = localStorage.getItem("auth_token");
-            const url = mode === "create" 
+            const url = mode === "create"
                 ? "http://localhost:8800/api/admin/products"
                 : `http://localhost:8800/api/admin/products/${product.id}`;
-            
+
             const method = mode === "create" ? "POST" : "PUT";
 
-            const submitData = {
+            const submitData: any = {
                 ...formData,
                 price: parseFloat(formData.price),
                 productTypeId: parseInt(formData.productTypeId),
             };
+
+            // Add stock data based on hasSize
+            if (formData.hasSize) {
+                submitData.sizeStocks = formData.sizeStocks.map(ss => ({
+                    sizeId: ss.sizeId,
+                    stock: parseInt(ss.stock) || 0,
+                }));
+            } else {
+                submitData.stock = parseInt(formData.stock) || 0;
+            }
 
             const response = await fetch(url, {
                 method,
@@ -355,6 +462,50 @@ export default function ProductFormModal({
                             placeholder="https://example.com/model.glb"
                         />
                     </div>
+
+                    {/* Stock Management */}
+                    {!formData.hasSize ? (
+                        <div>
+                            <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
+                                Stock Quantity *
+                            </label>
+                            <input
+                                type="number"
+                                id="stock"
+                                name="stock"
+                                value={formData.stock}
+                                onChange={handleInputChange}
+                                min="0"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="0"
+                                required
+                            />
+                        </div>
+                    ) : (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Stock by Size *
+                            </label>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {formData.sizeStocks.map((sizeStock) => (
+                                    <div key={sizeStock.sizeId}>
+                                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                                            {sizeStock.sizeName}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={sizeStock.stock}
+                                            onChange={(e) => handleSizeStockChange(sizeStock.sizeId, e.target.value)}
+                                            min="0"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="0"
+                                            required
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Checkboxes */}
                     <div className="space-y-4">

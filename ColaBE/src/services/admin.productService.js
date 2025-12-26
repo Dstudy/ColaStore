@@ -58,12 +58,12 @@ const getProductById = (id) => {
           },
         ],
       });
-      
+
       // Ensure product has at least one variant (should always be true, but handle edge case)
       if (product && (!product.ProductVariants || product.ProductVariants.length === 0)) {
         console.warn(`Product ${id} has no variants - this should not happen`);
       }
-      
+
       resolve(product);
     } catch (error) {
       reject(error);
@@ -76,7 +76,7 @@ const createProduct = (productData) => {
     try {
       const t = await sequelize.transaction();
       try {
-        const { variations, variants, imageUrl, ...productFields } = productData;
+        const { variations, variants, imageUrl, stock, sizeStocks, ...productFields } = productData;
 
         const product = await db.Product.create({
           ...productFields,
@@ -113,45 +113,44 @@ const createProduct = (productData) => {
           }
         }
 
-        // Handle size variants: [{ size_id?, stock }]
-        // All products must have at least one variant
-        if (Array.isArray(variants) && variants.length > 0) {
-          for (const v of variants) {
-            // Validate stock is provided
-            if (v.stock === undefined || v.stock === null) {
-              throw new Error("Stock is required for all variants");
-            }
-            await db.ProductVariant.create(
-              {
-                product_id: product.id,
-                size_id: v.size_id || null, // Allow null size_id
-                stock: v.stock,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-              { transaction: t }
-            );
-          }
+        // Handle stock data from new frontend format
+        let variantsToCreate = [];
 
-          // Set hasSize based on whether any variant has a size_id
-          const hasSize = variants.some((v) => v.size_id != null);
-          product.hasSize = hasSize;
-          await product.save({ transaction: t });
+        if (productData.hasSize && Array.isArray(sizeStocks) && sizeStocks.length > 0) {
+          // Product has size variants
+          variantsToCreate = sizeStocks.map(ss => ({
+            size_id: ss.sizeId,
+            stock: ss.stock || 0,
+          }));
+        } else if (!productData.hasSize && stock !== undefined) {
+          // Product without size variants
+          variantsToCreate = [{
+            size_id: null,
+            stock: stock || 0,
+          }];
+        } else if (Array.isArray(variants) && variants.length > 0) {
+          // Legacy format: use variants array
+          variantsToCreate = variants;
         } else {
-          // If no variants provided, create a default variant with null size_id
-          // Stock defaults to 0 (must be provided explicitly in variants if needed)
+          // Default: create one variant with stock 0
+          variantsToCreate = [{
+            size_id: null,
+            stock: 0,
+          }];
+        }
+
+        // Create variants
+        for (const v of variantsToCreate) {
           await db.ProductVariant.create(
             {
               product_id: product.id,
-              size_id: null,
-              stock: 0,
+              size_id: v.size_id || null,
+              stock: v.stock || 0,
               createdAt: new Date(),
               updatedAt: new Date(),
             },
             { transaction: t }
           );
-          product.hasSize = false;
-          await product.save({ transaction: t });
         }
 
         await t.commit();
@@ -160,6 +159,14 @@ const createProduct = (productData) => {
             include: [
               {
                 model: db.ProductImage,
+              },
+              {
+                model: db.ProductVariant,
+                include: [
+                  {
+                    model: db.Size,
+                  },
+                ],
               },
             ],
           })
@@ -179,7 +186,7 @@ const updateProduct = (id, updateData) => {
     try {
       const t = await sequelize.transaction();
       try {
-        const { variations, variants, imageUrl, ...productFields } = updateData;
+        const { variations, variants, imageUrl, stock, sizeStocks, ...productFields } = updateData;
         const [updatedRowsCount] = await db.Product.update(productFields, {
           where: { id },
           transaction: t,
@@ -230,46 +237,50 @@ const updateProduct = (id, updateData) => {
           }
         }
 
-        // Update size variants
-        if (Array.isArray(variants)) {
-          // All products must have at least one variant
-          if (variants.length === 0) {
-            throw new Error("At least one variant is required for each product");
-          }
+        // Handle stock data from new frontend format
+        let variantsToUpdate = null;
 
-          // Validate all variants have stock
-          for (const v of variants) {
-            if (v.stock === undefined || v.stock === null) {
-              throw new Error("Stock is required for all variants");
-            }
+        if (updateData.hasSize !== undefined) {
+          // Stock data is being updated
+          if (updateData.hasSize && Array.isArray(sizeStocks) && sizeStocks.length > 0) {
+            // Product has size variants
+            variantsToUpdate = sizeStocks.map(ss => ({
+              size_id: ss.sizeId,
+              stock: ss.stock || 0,
+            }));
+          } else if (!updateData.hasSize && stock !== undefined) {
+            // Product without size variants
+            variantsToUpdate = [{
+              size_id: null,
+              stock: stock || 0,
+            }];
           }
+        } else if (Array.isArray(variants)) {
+          // Legacy format: use variants array
+          variantsToUpdate = variants;
+        }
 
+        // Update variants if provided
+        if (variantsToUpdate !== null) {
           // Remove old variants
           await db.ProductVariant.destroy({
             where: { product_id: id },
             transaction: t,
           });
 
-          // Recreate from payload
-          for (const v of variants) {
+          // Create new variants
+          for (const v of variantsToUpdate) {
             await db.ProductVariant.create(
               {
                 product_id: id,
-                size_id: v.size_id || null, // Allow null size_id
-                stock: v.stock,
+                size_id: v.size_id || null,
+                stock: v.stock || 0,
                 createdAt: new Date(),
                 updatedAt: new Date(),
               },
               { transaction: t }
             );
           }
-
-          // Update hasSize flag based on whether any variant has a size_id
-          const hasSize = variants.some((v) => v.size_id != null);
-          await db.Product.update(
-            { hasSize },
-            { where: { id }, transaction: t }
-          );
         }
 
         await t.commit();
