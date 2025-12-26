@@ -125,7 +125,6 @@ export default function ThreeViewerHome({ modelUrl }: Props) {
                         start: "top bottom",
                         end: "+=5000",
                         scrub: 1,
-                        markers: true,
                     },
                 });
 

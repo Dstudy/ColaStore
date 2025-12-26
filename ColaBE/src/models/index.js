@@ -13,6 +13,7 @@ import Analytics from "./analytics.js";
 import Size from "./size.js";
 import ProductVariant from "./productVariant.js";
 import ProductType from "./productType.js";
+import Review from "./review.js";
 
 // ✅ Initialize Sequelize
 const sequelize = new Sequelize("colastore", "root", "1", {
@@ -37,6 +38,7 @@ const models = {
   Order: Order(sequelize),
   OrderItem: OrderItem(sequelize),
   Analytics: Analytics(sequelize),
+  Review: Review(sequelize),
 };
 
 // =================================================================
@@ -115,6 +117,25 @@ models.Product.hasMany(models.OrderItem, {
 });
 models.OrderItem.belongsTo(models.Product, {
   foreignKey: "product_id",
+});
+
+// --- Reviews ---
+models.Product.hasMany(models.Review, {
+  foreignKey: "product_id",
+  as: "reviews"
+});
+models.Review.belongsTo(models.Product, {
+  foreignKey: "product_id",
+  as: "product"
+});
+
+models.User.hasMany(models.Review, {
+  foreignKey: "user_id",
+  as: "reviews"
+});
+models.Review.belongsTo(models.User, {
+  foreignKey: "user_id",
+  as: "user"
 });
 
 

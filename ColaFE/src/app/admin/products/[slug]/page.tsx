@@ -3,9 +3,11 @@
 import { use } from "react";
 import useSWR from "swr";
 import AdminLayout from "@/components/AdminLayout";
-import { Package, DollarSign, Tag, Image, Info, ArrowLeft } from "lucide-react";
+import { Package, DollarSign, Tag, Image, Info, ArrowLeft, Star } from "lucide-react";
 import Link from "next/link";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import StarRating from "@/components/StarRating";
+import ReviewList from "@/components/ReviewList";
 
 // Types
 interface ProductImage {
@@ -77,6 +79,16 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
     const { data, error, isLoading } = useSWR<ProductResponse>(
         `http://localhost:8800/api/admin/products/${productId}`,
         fetcher
+    );
+
+    // Fetch review statistics
+    const { data: reviewData } = useSWR(
+        `http://localhost:8800/api/products/${productId}/reviews?page=1&limit=1`,
+        async (url: string) => {
+            const res = await fetch(url);
+            if (!res.ok) return null;
+            return res.json();
+        }
     );
 
     if (isLoading) {
@@ -223,7 +235,7 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
                                 <DollarSign size={20} />
                                 Pricing & Stock
                             </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div className="bg-indigo-50 rounded-lg p-4">
                                     <p className="text-sm text-indigo-600 mb-1">Price</p>
                                     <p className="text-2xl font-bold text-indigo-900">
@@ -239,6 +251,27 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
                                     <p className="text-2xl font-bold text-purple-900">
                                         {product.ProductVariants?.length || 0}
                                     </p>
+                                </div>
+                                <div className="bg-yellow-50 rounded-lg p-4">
+                                    <p className="text-sm text-yellow-600 mb-1">Rating</p>
+                                    {reviewData?.data?.statistics ? (
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <p className="text-2xl font-bold text-yellow-900">
+                                                    {reviewData.data.statistics.averageRating}
+                                                </p>
+                                                <StarRating
+                                                    rating={parseFloat(reviewData.data.statistics.averageRating)}
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <p className="text-xs text-yellow-700">
+                                                {reviewData.data.statistics.totalReviews} review{reviewData.data.statistics.totalReviews !== 1 ? 's' : ''}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No reviews yet</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -377,6 +410,18 @@ export default function ProductAdminDetailPage({ params }: { params: Promise<{ s
                                     </p>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Customer Reviews & Ratings */}
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                <Star size={20} />
+                                Customer Reviews & Ratings
+                            </h2>
+                            <ReviewList
+                                productId={product.id}
+                                currentUserId={undefined}
+                            />
                         </div>
                     </div>
                 </div>

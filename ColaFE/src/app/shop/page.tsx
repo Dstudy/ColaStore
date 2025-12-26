@@ -1,5 +1,7 @@
 "use client";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import StarRating from "@/components/StarRating";
+import ProductRating from "@/components/ProductRating";
 import useSWR from "swr";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -264,6 +266,12 @@ export default function ShopPage() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                   {product.name}
                 </h3>
+
+                {/* Rating Stars */}
+                <div className="mb-2">
+                  <ProductRating productId={product.id} />
+                </div>
+
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                   {product.subtitle}
                 </p>

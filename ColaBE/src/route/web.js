@@ -8,6 +8,7 @@ import adminProductImageController from "../controllers/admin.productImageContro
 import cartController from "../controllers/cartController.js";
 import orderController from "../controllers/orderController.js";
 import sizeController from "../controllers/sizeController.js";
+import reviewController from "../controllers/reviewController.js";
 
 const router = express.Router();
 
@@ -109,6 +110,14 @@ const initWebRoutes = (app) => {
   router.get("/api/users/:userId/orders/:orderId", orderController.detail);
   router.post("/api/users/:userId/orders", orderController.createFromCart);
   router.delete("/api/users/:userId/orders/:orderId", orderController.cancel);
+
+  // Reviews & Ratings
+  router.post("/api/reviews", reviewController.createReview);
+  router.get("/api/products/:productId/reviews", reviewController.getProductReviews);
+  router.get("/api/products/:productId/users/:userId/review", reviewController.getUserProductReview);
+  router.get("/api/users/:userId/reviews", reviewController.getUserReviews);
+  router.put("/api/reviews/:reviewId", reviewController.updateReview);
+  router.delete("/api/reviews/:reviewId", reviewController.deleteReview);
 
   return app.use("/", router);
 };

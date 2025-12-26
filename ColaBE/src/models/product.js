@@ -38,9 +38,6 @@ export default (sequelize) => {
   );
 
   Product.associate = (models) => {
-    Product.hasMany(models.Review, {
-      foreignKey: "product_id",
-    });
     Product.belongsTo(models.ProductType, {
       foreignKey: "productTypeId",
     });

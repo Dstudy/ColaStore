@@ -10,6 +10,7 @@ import {
 import { ShoppingCart } from "lucide-react";
 import { toast } from "react-toastify";
 import ThreeViewer from "@/components/ThreeViewer";
+import ProductReviewSection from "@/components/ProductReviewSection";
 
 interface PageParams {
   slug: string;
@@ -477,6 +478,14 @@ export default function ProductDetailPage({ params }: PageProps) {
               </div>
             )}
           </section>
+        </div>
+
+        {/* Customer Reviews & Ratings Section */}
+        <div className="mt-16 border-t border-gray-200 pt-12">
+          <ProductReviewSection
+            productId={product.id}
+            userId={userId || undefined}
+          />
         </div>
       </div>
     </main>
